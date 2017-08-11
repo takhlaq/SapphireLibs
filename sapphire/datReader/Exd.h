@@ -1,6 +1,8 @@
 #ifndef XIV_EXD_EXD_H
 #define XIV_EXD_EXD_H
 
+#include "cbasetypes.h"
+
 #include <memory>
 #include <map>
 

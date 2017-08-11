@@ -1,6 +1,9 @@
 #ifndef XIV_EXD_CAT_H
 #define XIV_EXD_CAT_H
 
+#include "cbasetypes.h"
+
+
 #include <memory>
 #include <map>
 

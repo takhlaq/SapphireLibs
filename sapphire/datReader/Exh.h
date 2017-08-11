@@ -1,6 +1,8 @@
 #ifndef XIV_EXD_EXH_H
 #define XIV_EXD_EXH_H
 
+#include "cbasetypes.h"
+
 #include <map>
 
 #include "bparse.h"

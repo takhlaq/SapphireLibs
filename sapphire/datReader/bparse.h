@@ -1,6 +1,8 @@
 #ifndef XIV_UTILS_BPARSE_H
 #define XIV_UTILS_BPARSE_H
 
+#include "cbasetypes.h"
+
 #include <type_traits>
 #include <iomanip>
 #include <sstream>

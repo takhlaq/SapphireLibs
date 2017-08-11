@@ -1,6 +1,8 @@
 #ifndef XIV_EXD_EXDDATA_H
 #define XIV_EXD_EXDDATA_H
 
+#include "cbasetypes.h"
+
 #include <unordered_map>
 #include <memory>
 #include <mutex>

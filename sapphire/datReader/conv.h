@@ -1,7 +1,8 @@
 #ifndef XIV_UTILS_CONV_H
 #define XIV_UTILS_CONV_H
 
-#include <cstdint>
+#include "cbasetypes.h"
+
 #include <vector>
 #include <ostream>
 

@@ -1,7 +1,8 @@
 #ifndef XIV_UTILS_CRC32_H
 #define XIV_UTILS_CRC32_H
 
-#include <cstdint>
+#include "cbasetypes.h"
+
 #include <vector>
 #include <string>
 

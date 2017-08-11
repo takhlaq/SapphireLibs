@@ -1,10 +1,13 @@
 #ifndef XIV_DAT_FILE_H
 #define XIV_DAT_FILE_H
 
+#include "cbasetypes.h"
+
 #include <vector>
 
 #include <boost/filesystem.hpp>
-#include <stdint.h>
+#include "cbasetypes.h"
+
 #include "bparse.h"
 
 

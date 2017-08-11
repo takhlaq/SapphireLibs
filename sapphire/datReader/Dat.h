@@ -1,6 +1,9 @@
 #ifndef XIV_DAT_DAT_H
 #define XIV_DAT_DAT_H
 
+#include "cbasetypes.h"
+
+
 #include "SqPack.h"
 
 #include <mutex>

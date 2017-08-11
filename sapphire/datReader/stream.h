@@ -1,6 +1,8 @@
 #ifndef XIV_UTILS_STREAM_H
 #define XIV_UTILS_STREAM_H
 
+#include "cbasetypes.h"
+
 #include <memory>
 #include <iostream>
 #include <vector>

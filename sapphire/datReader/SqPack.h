@@ -1,6 +1,8 @@
 #ifndef XIV_DAT_SQPACK_H
 #define XIV_DAT_SQPACK_H
 
+#include "cbasetypes.h"
+
 #include <fstream>
 
 #include <boost/filesystem.hpp>

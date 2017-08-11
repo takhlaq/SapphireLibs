@@ -1,6 +1,8 @@
 #ifndef XIV_DAT_CAT_H
 #define XIV_DAT_CAT_H
 
+#include "cbasetypes.h"
+
 #include <memory>
 #include <vector>
 

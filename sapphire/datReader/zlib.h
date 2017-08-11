@@ -1,7 +1,8 @@
 #ifndef XIV_UTILS_ZLIB_H
 #define XIV_UTILS_ZLIB_H
 
-#include <cstdint>
+#include "cbasetypes.h"
+
 #include <vector>
 
 namespace xiv
