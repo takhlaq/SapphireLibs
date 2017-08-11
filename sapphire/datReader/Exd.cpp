@@ -39,7 +39,7 @@ namespace xiv
    {
       namespace bparse
       {
-         template <> inline void reorder<xiv::exd::ExdHeader>( xiv::exd::ExdHeader& i_struct ) { for( int i = 0; i < 0x4; ++i ) { xiv::utils::bparse::reorder( i_struct.magic[i] ); }  i_struct.unknown = xiv::utils::bparse::byteswap( i_struct.unknown ); xiv::utils::bparse::reorder( i_struct.unknown );  i_struct.unknown2 = xiv::utils::bparse::byteswap( i_struct.unknown2 ); xiv::utils::bparse::reorder( i_struct.unknown2 );  i_struct.index_size = xiv::utils::bparse::byteswap( i_struct.index_size ); xiv::utils::bparse::reorder( i_struct.index_size ); }
+         template <> inline void reorder<xiv::exd::ExdHeader>( xiv::exd::ExdHeader& i_struct ) { for( int32_t i = 0; i < 0x4; ++i ) { xiv::utils::bparse::reorder( i_struct.magic[i] ); }  i_struct.unknown = xiv::utils::bparse::byteswap( i_struct.unknown ); xiv::utils::bparse::reorder( i_struct.unknown );  i_struct.unknown2 = xiv::utils::bparse::byteswap( i_struct.unknown2 ); xiv::utils::bparse::reorder( i_struct.unknown2 );  i_struct.index_size = xiv::utils::bparse::byteswap( i_struct.index_size ); xiv::utils::bparse::reorder( i_struct.index_size ); }
          template <> inline void reorder<xiv::exd::ExdRecordIndex>( xiv::exd::ExdRecordIndex& i_struct ) { i_struct.id = xiv::utils::bparse::byteswap( i_struct.id ); xiv::utils::bparse::reorder( i_struct.id );  i_struct.offset = xiv::utils::bparse::byteswap( i_struct.offset ); xiv::utils::bparse::reorder( i_struct.offset ); }
       }
    }
@@ -289,7 +289,7 @@ namespace xiv
             o_stream << i_delimiter;
             for( char c : operand )
             {
-               if( isprint( static_cast< int >( static_cast< uint8_t >( c ) ) ) )
+               if( isprint( static_cast< int32_t >( static_cast< uint8_t >( c ) ) ) )
                {
                   o_stream << c;
                }
