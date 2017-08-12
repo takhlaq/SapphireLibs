@@ -6,7 +6,7 @@ include_directories("../../external/")
 if(UNIX)
   include_directories("/usr/include/mysql/")
   message(STATUS "Setting GCC flags")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -m32")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   
   find_package(Boost ${SAPPHIRE_BOOST_VER} COMPONENTS system)
   if(Boost_FOUND)
