@@ -1,0 +1,94 @@
+# Output Directory
+[Bb]in/
+
+# Build Directory
+build/
+
+# Prerequisites
+*.d
+
+# Compiled Binaries
+*.pdb
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# Binary Template
+*.bt
+
+# Boost
+/lib/boost_1_63_0
+src/libraries/external/boost_*
+
+# EasyHook
+!EasyHook32.dll
+!EasyHook32Svc.exe
+!EasyHook64.dll
+!EasyHook64Svc.exe
+!EasyLoad32.dll
+!EasyLoad64.dll
+
+# Cache
+.vs/
+.vscode/
+.idea/
+*.cache
+*.dat
+*.suo
+*.pch
+*.ipch
+*.g.cs
+*.g.i.cs
+*.log
+*.tlog
+*.db
+*.vcdb
+*.bin
+*.pcb
+*.ilk
+/Sapphire.VC.VC.opendb
+*.user
+*.dat
+*.metagen
+*.ipdb
+*.iobj
+*.filters
+
