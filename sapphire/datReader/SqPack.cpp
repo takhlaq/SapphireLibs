@@ -24,7 +24,7 @@ namespace xiv {
       namespace bparse {
          template <> inline void reorder<xiv::dat::SqPackHeader>( xiv::dat::SqPackHeader& i_struct )
          {
-            for( int i = 0; i < 0x8; ++i ) 
+            for( int32_t i = 0; i < 0x8; ++i ) 
             {
                xiv::utils::bparse::reorder( i_struct.magic[i] );
             }
