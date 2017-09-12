@@ -1,0 +1,3 @@
+[submodule "external/MySQL/cpp"]
+	path = external/MySQL/cpp
+	url = https://github.com/mysql/mysql-connector-cpp
