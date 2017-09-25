@@ -20,8 +20,8 @@ public:
 
    ~MySqlBase();
 
-   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password );
-   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password, const optionMap& map );
+   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password, uint16_t port );
+   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password, const optionMap& map, uint16_t port );
 
    std::string getVersionInfo();
 

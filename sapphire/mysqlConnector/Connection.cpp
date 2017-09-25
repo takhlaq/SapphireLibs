@@ -242,3 +242,13 @@ Mysql::PreparedStatement* Mysql::Connection::prepareStatement( const std::string
    return new PreparedStatement( stmt, this );
 }
 
+uint32_t Mysql::Connection::getErrorNo()
+{
+   return mysql_errno( m_pRawCon );
+}
+
+void Mysql::Connection::ping()
+{
+   mysql_ping( m_pRawCon );
+}
+

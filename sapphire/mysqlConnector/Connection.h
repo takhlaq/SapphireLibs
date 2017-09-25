@@ -34,6 +34,8 @@ namespace Mysql
 
       void close();
       bool isClosed() const;
+
+      void ping();
       
       void setOption( enum mysql_option option, const void *arg );
       void setOption( enum mysql_option option, uint32_t arg );
@@ -59,6 +61,7 @@ namespace Mysql
       //DatabaseMetaData * getMetaData();
 
       std::string getError();
+      uint32_t getErrorNo();
 
       bool isReadOnly();
       void setReadOnly( bool readOnly );
