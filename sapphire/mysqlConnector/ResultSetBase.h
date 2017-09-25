@@ -5,10 +5,7 @@
 #include <map>
 #include <iostream>
 
-
-namespace Core
-{
-namespace Db
+namespace Mysql
 {
 
    class Statement;
@@ -63,8 +60,6 @@ namespace Db
 
       virtual size_t rowsCount() const = 0;
    };
-}
-
 }
 
 #endif //SAPPHIRE_RESULTSETBASE_H

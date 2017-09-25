@@ -7,11 +7,8 @@
 #include <map>
 
 
-namespace Core
+namespace Mysql
 {
-namespace Db
-{
-
    typedef std::map< enum mysql_option, std::string > optionMap;
    class MySqlBase;
    class Statement;
@@ -96,7 +93,6 @@ namespace Db
    };
 
 
-}
 }
 
 #endif //SAPPHIRE_CONNECTION_H

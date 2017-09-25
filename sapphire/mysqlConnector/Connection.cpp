@@ -6,11 +6,11 @@
 #include <vector>
 #include <boost/scoped_array.hpp>
 
-Core::Db::Connection::Connection( MySqlBase * pBase, 
-                                  const std::string& hostName, 
-                                  const std::string& userName,
-                                  const std::string& password,
-                                  uint16_t port ) :
+Mysql::Connection::Connection( MySqlBase * pBase, 
+                               const std::string& hostName, 
+                               const std::string& userName,
+                               const std::string& password,
+                               uint16_t port ) :
     m_pBase( pBase ),
     m_bConnected( false )
 {
@@ -22,12 +22,12 @@ Core::Db::Connection::Connection( MySqlBase * pBase,
 
 }
 
-Core::Db::Connection::Connection( MySqlBase * pBase,
-                                  const std::string& hostName,
-                                  const std::string& userName,
-                                  const std::string& password,
-                                  const optionMap& options,
-                                  uint16_t port ) :
+Mysql::Connection::Connection( MySqlBase * pBase,
+                               const std::string& hostName,
+                               const std::string& userName,
+                               const std::string& password,
+                               const optionMap& options,
+                               uint16_t port ) :
     m_pBase( pBase )
 {
    m_pRawCon = mysql_init( nullptr );
@@ -109,11 +109,11 @@ Core::Db::Connection::Connection( MySqlBase * pBase,
 }
 
 
-Core::Db::Connection::~Connection()
+Mysql::Connection::~Connection()
 {
 }
 
-void Core::Db::Connection::setOption( enum mysql_option option, const void *arg )
+void Mysql::Connection::setOption( enum mysql_option option, const void *arg )
 {
 
    if( mysql_options( m_pRawCon, option, arg ) != 0  )
@@ -121,7 +121,7 @@ void Core::Db::Connection::setOption( enum mysql_option option, const void *arg 
 
 }
 
-void Core::Db::Connection::setOption( enum mysql_option option, uint32_t arg )
+void Mysql::Connection::setOption( enum mysql_option option, uint32_t arg )
 {
  
    if( mysql_options( m_pRawCon, option, &arg ) != 0  )
@@ -129,7 +129,7 @@ void Core::Db::Connection::setOption( enum mysql_option option, uint32_t arg )
 
 }
 
-void Core::Db::Connection::setOption( enum mysql_option option, const std::string& arg )
+void Mysql::Connection::setOption( enum mysql_option option, const std::string& arg )
 {
 
    if( mysql_options( m_pRawCon, option, arg.c_str() ) != 0 )
@@ -137,30 +137,30 @@ void Core::Db::Connection::setOption( enum mysql_option option, const std::strin
 
 }
 
-void Core::Db::Connection::close()
+void Mysql::Connection::close()
 {
    mysql_close( m_pRawCon );
    m_bConnected = false;
 }
 
-bool Core::Db::Connection::isClosed() const
+bool Mysql::Connection::isClosed() const
 {
    return !m_bConnected;
 }
 
-Core::Db::MySqlBase* Core::Db::Connection::getMySqlBase() const
+Mysql::MySqlBase* Mysql::Connection::getMySqlBase() const
 {
    return m_pBase;
 }
 
-void Core::Db::Connection::setAutoCommit( bool autoCommit )
+void Mysql::Connection::setAutoCommit( bool autoCommit )
 {
    auto b = static_cast< my_bool >( autoCommit == true ? 1 : 0 );
    if( mysql_autocommit( m_pRawCon, b ) != 0 )
       throw std::runtime_error( "Connection::setAutoCommit failed!" );
 }
 
-bool Core::Db::Connection::getAutoCommit()
+bool Mysql::Connection::getAutoCommit()
 {
    // TODO: should be replaced with wrapped sql query function once available
    std::string query("SELECT @@autocommit");
@@ -177,25 +177,25 @@ bool Core::Db::Connection::getAutoCommit()
    return ac != 0;
 }
 
-void Core::Db::Connection::beginTransaction()
+void Mysql::Connection::beginTransaction()
 {
    boost::scoped_ptr< Statement > stmt( createStatement() );
    stmt->execute( "START TRANSACTION;" );
 }
 
-void Core::Db::Connection::commitTransaction()
+void Mysql::Connection::commitTransaction()
 {
    boost::scoped_ptr< Statement > stmt( createStatement() );
    stmt->execute( "COMMIT" );
 }
 
-void Core::Db::Connection::rollbackTransaction()
+void Mysql::Connection::rollbackTransaction()
 {
    boost::scoped_ptr< Statement > stmt( createStatement() );
    stmt->execute( "ROLLBACK" );
 }
 
-std::string Core::Db::Connection::escapeString( const std::string &inData )
+std::string Mysql::Connection::escapeString( const std::string &inData )
 {
    boost::scoped_array< char > buffer( new char[inData.length() * 2 + 1] );
    if( !buffer.get() )
@@ -205,23 +205,23 @@ std::string Core::Db::Connection::escapeString( const std::string &inData )
    return std::string( buffer.get(), return_len );
 }
 
-void Core::Db::Connection::setSchema( const std::string &schema )
+void Mysql::Connection::setSchema( const std::string &schema )
 {
    if( mysql_select_db( m_pRawCon, schema.c_str() ) != 0 )
       throw std::runtime_error( "Current database could not be changed to " + schema );
 }
 
-Core::Db::Statement *Core::Db::Connection::createStatement()
+Mysql::Statement* Mysql::Connection::createStatement()
 {
    return new Statement( this );
 }
 
-MYSQL *Core::Db::Connection::getRawCon()
+MYSQL* Mysql::Connection::getRawCon()
 {
    return m_pRawCon;
 }
 
-std::string Core::Db::Connection::getError()
+std::string Mysql::Connection::getError()
 {
    auto mysqlError = mysql_error( m_pRawCon );
    if( mysqlError )
@@ -229,7 +229,7 @@ std::string Core::Db::Connection::getError()
    return "";
 }
 
-Core::Db::PreparedStatement* Core::Db::Connection::prepareStatement( const std::string &sql )
+Mysql::PreparedStatement* Mysql::Connection::prepareStatement( const std::string &sql )
 {
    MYSQL_STMT* stmt = mysql_stmt_init( getRawCon() );
 

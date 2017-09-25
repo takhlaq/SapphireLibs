@@ -8,7 +8,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <string.h>
 
-Core::Db::ResultSet::ResultSet( MYSQL_RES *res, Core::Db::Statement *par )
+Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
 {
    m_pRes = res;
    m_numRows = mysql_num_rows( res );
@@ -29,17 +29,17 @@ Core::Db::ResultSet::ResultSet( MYSQL_RES *res, Core::Db::Statement *par )
 
 }
 
-Core::Db::ResultSet::~ResultSet()
+Mysql::ResultSet::~ResultSet()
 {
    mysql_free_result( m_pRes );
 }
 
-MYSQL_FIELD* Core::Db::ResultSet::getFieldMeta( uint32_t columnIndex ) const
+MYSQL_FIELD* Mysql::ResultSet::getFieldMeta( uint32_t columnIndex ) const
 {
    return mysql_fetch_field_direct( m_pRes, columnIndex - 1 );
 }
 
-uint32_t Core::Db::ResultSet::findColumn( const std::string &columnLabel ) const
+uint32_t Mysql::ResultSet::findColumn( const std::string &columnLabel ) const
 {
    std::string searchColumn = columnLabel;
 
@@ -53,22 +53,22 @@ uint32_t Core::Db::ResultSet::findColumn( const std::string &columnLabel ) const
    return iter->second + 1;
 }
 
-size_t Core::Db::ResultSet::getRow() const
+size_t Mysql::ResultSet::getRow() const
 {
    return static_cast< size_t >( m_rowPosition );
 }
 
-bool Core::Db::ResultSet::isLast() const
+bool Mysql::ResultSet::isLast() const
 {
    return ( m_rowPosition == m_numRows );
 }
 
-bool Core::Db::ResultSet::isFirst() const
+bool Mysql::ResultSet::isFirst() const
 {
    return ( m_rowPosition == 1 );
 }
 
-bool Core::Db::ResultSet::next()
+bool Mysql::ResultSet::next()
 {
    bool ret = false;
 
@@ -88,17 +88,17 @@ bool Core::Db::ResultSet::next()
    return ret;
 }
 
-size_t Core::Db::ResultSet::rowsCount() const
+size_t Mysql::ResultSet::rowsCount() const
 {
    return static_cast< uint32_t >( m_numRows );
 }
 
-const Core::Db::Statement *Core::Db::ResultSet::getStatement() const
+const Mysql::Statement* Mysql::ResultSet::getStatement() const
 {
    return m_pStmt;
 }
 
-int64_t Core::Db::ResultSet::getInt64( uint32_t columnIndex ) const
+int64_t Mysql::ResultSet::getInt64( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getInt64: invalid value of 'columnIndex'" );
@@ -139,22 +139,22 @@ int64_t Core::Db::ResultSet::getInt64( uint32_t columnIndex ) const
    return strtoll( m_row[columnIndex - 1], nullptr, 10 );
 }
 
-int64_t Core::Db::ResultSet::getInt64( const std::string &columnLabel ) const
+int64_t Mysql::ResultSet::getInt64( const std::string &columnLabel ) const
 {
    return getInt64( findColumn( columnLabel ) );
 }
 
-uint64_t Core::Db::ResultSet::getUInt64( uint32_t columnIndex ) const
+uint64_t Mysql::ResultSet::getUInt64( uint32_t columnIndex ) const
 {
    return static_cast< uint64_t >( getInt64( columnIndex ) );
 }
 
-uint64_t Core::Db::ResultSet::getUInt64( const std::string &columnLabel ) const
+uint64_t Mysql::ResultSet::getUInt64( const std::string &columnLabel ) const
 {
    return getUInt64( findColumn( columnLabel ) );
 }
 
-int32_t Core::Db::ResultSet::getInt( uint32_t columnIndex ) const
+int32_t Mysql::ResultSet::getInt( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getInt: invalid value of 'columnIndex'" );
@@ -165,12 +165,12 @@ int32_t Core::Db::ResultSet::getInt( uint32_t columnIndex ) const
    return static_cast< int32_t >( getInt64( columnIndex ) );
 }
 
-int32_t Core::Db::ResultSet::getInt( const std::string &columnLabel ) const
+int32_t Mysql::ResultSet::getInt( const std::string &columnLabel ) const
 {
    return getInt( findColumn( columnLabel ) );
 }
 
-uint32_t Core::Db::ResultSet::getUInt( uint32_t columnIndex ) const
+uint32_t Mysql::ResultSet::getUInt( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getUInt: invalid value of 'columnIndex'" );
@@ -178,12 +178,12 @@ uint32_t Core::Db::ResultSet::getUInt( uint32_t columnIndex ) const
    return static_cast< uint32_t >( getUInt64( columnIndex ) );
 }
 
-uint32_t Core::Db::ResultSet::getUInt( const std::string &columnLabel ) const
+uint32_t Mysql::ResultSet::getUInt( const std::string &columnLabel ) const
 {
    return getUInt( findColumn( columnLabel ) );
 }
 
-long double Core::Db::ResultSet::getDouble( uint32_t columnIndex ) const
+long double Mysql::ResultSet::getDouble( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getDouble: invalid value of 'columnIndex'" );
@@ -199,15 +199,15 @@ long double Core::Db::ResultSet::getDouble( uint32_t columnIndex ) const
    if( getFieldMeta(columnIndex)->type == MYSQL_TYPE_BIT )
       return static_cast< long double >( getInt64( columnIndex ) );
 
-   return Util::strtonum( m_row[columnIndex - 1] );
+   return Mysql::Util::strtonum( m_row[columnIndex - 1] );
 }
 
-long double Core::Db::ResultSet::getDouble( const std::string &columnLabel ) const
+long double Mysql::ResultSet::getDouble( const std::string &columnLabel ) const
 {
    return getDouble( findColumn( columnLabel ) );
 }
 
-bool Core::Db::ResultSet::getBoolean( uint32_t columnIndex ) const
+bool Mysql::ResultSet::getBoolean( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getBoolean: invalid value of 'columnIndex'" );
@@ -215,12 +215,12 @@ bool Core::Db::ResultSet::getBoolean( uint32_t columnIndex ) const
    return getInt( columnIndex ) ? true : false;
 }
 
-bool Core::Db::ResultSet::getBoolean( const std::string &columnLabel ) const
+bool Mysql::ResultSet::getBoolean( const std::string &columnLabel ) const
 {
    return getInt( columnLabel ) ? true : false;
 }
 
-std::string Core::Db::ResultSet::getString( uint32_t columnIndex ) const
+std::string Mysql::ResultSet::getString( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getString: invalid value of 'columnIndex'" );
@@ -243,12 +243,12 @@ std::string Core::Db::ResultSet::getString( uint32_t columnIndex ) const
    return std::string( m_row[columnIndex - 1], len );
 }
 
-std::string Core::Db::ResultSet::getString( const std::string &columnLabel ) const
+std::string Mysql::ResultSet::getString( const std::string &columnLabel ) const
 {
    return getString( findColumn( columnLabel ) );
 }
 
-bool Core::Db::ResultSet::isNull( uint32_t columnIndex ) const
+bool Mysql::ResultSet::isNull( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::isNull: invalid value of 'columnIndex'" );
@@ -256,12 +256,12 @@ bool Core::Db::ResultSet::isNull( uint32_t columnIndex ) const
    return ( m_row[columnIndex - 1] == nullptr );
 }
 
-bool Core::Db::ResultSet::isNull( const std::string &columnLabel ) const
+bool Mysql::ResultSet::isNull( const std::string &columnLabel ) const
 {
    return isNull( findColumn( columnLabel ) );
 }
 
-std::istream* Core::Db::ResultSet::getBlob( uint32_t columnIndex ) const
+std::istream* Mysql::ResultSet::getBlob( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getBlob: invalid value of 'columnIndex'" );
@@ -269,12 +269,12 @@ std::istream* Core::Db::ResultSet::getBlob( uint32_t columnIndex ) const
    return new std::istringstream( getString( columnIndex ) );
 }
 
-std::istream* Core::Db::ResultSet::getBlob( const std::string& columnLabel ) const
+std::istream* Mysql::ResultSet::getBlob( const std::string& columnLabel ) const
 {
    return new std::istringstream( getString( columnLabel ) );
 }
 
-std::vector< char > Core::Db::ResultSet::getBlobVector( uint32_t columnIndex ) const
+std::vector< char > Mysql::ResultSet::getBlobVector( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "ResultSet::getBlobVector: invalid value of 'columnIndex'" );
@@ -291,7 +291,7 @@ std::vector< char > Core::Db::ResultSet::getBlobVector( uint32_t columnIndex ) c
    return data;
 }
 
-std::vector< char > Core::Db::ResultSet::getBlobVector( const std::string& columnLabel ) const
+std::vector< char > Mysql::ResultSet::getBlobVector( const std::string& columnLabel ) const
 {
    return getBlobVector( findColumn( columnLabel ) );
 }

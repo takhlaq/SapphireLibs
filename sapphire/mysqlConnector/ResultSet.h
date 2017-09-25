@@ -9,14 +9,9 @@
 #include "ResultSetBase.h"
 #include <mysql.h>
 
-namespace Core
+namespace Mysql
 {
-   namespace Db
-   {
-
       class Statement;
-      //class ResultSetMetaData;
-
 
       class ResultSet
       {
@@ -37,8 +32,6 @@ namespace Core
          Statement* m_pStmt;
 
          MYSQL_RES* m_pRes;
-
-         //boost::scoped_ptr< MySQL_ResultSetMetaData > rs_meta;
 
       protected:
          MYSQL_FIELD* getFieldMeta( unsigned int columnIndex ) const;
@@ -98,8 +91,6 @@ namespace Core
          ResultSet( const ResultSet& );
          void operator=( ResultSet& );
       };
-
-   }
 }
 
 

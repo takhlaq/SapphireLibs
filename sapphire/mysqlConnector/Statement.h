@@ -4,9 +4,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace Core
-{
-namespace Db
+namespace Mysql
 {
    class Connection;
    class ResultSet;
@@ -48,8 +46,4 @@ namespace Db
    };
 
 }
-}
-
-
-
 #endif //SAPPHIRE_STATEMENT_H

@@ -10,9 +10,7 @@
 static const unsigned int MAX_SEND_LONGDATA_BUFFER = 1 << 18; //1<<18=256k (for istream)
 static const unsigned int MAX_SEND_LONGDATA_CHUNK =  1 << 18; //1<<19=512k (for string)
 
-namespace Core
-{
-namespace Db
+namespace Mysql
 {
 
 // Visitor class to send long data contained in blob_bind
@@ -25,15 +23,15 @@ class LongDataSender : public boost::static_visitor< bool >
 
 public:
 
-   LongDataSender(MYSQL_STMT* pStmt, unsigned int i)
+   LongDataSender( MYSQL_STMT* pStmt, unsigned int i )
            : position( i )
            , m_pStmt( pStmt )
    {
    }
 
-   bool operator()(std::istream* my_blob) const
+   bool operator()( std::istream* my_blob ) const
    {
-      if (my_blob == NULL)
+      if( my_blob == nullptr )
          return false;
 
       //char buf[MAX_SEND_LONGDATA_BUFFER];
@@ -291,7 +289,7 @@ public:
       }
    }
 
-   MYSQL_BIND * getBindObject()
+   MYSQL_BIND* getBindObject()
    {
       return bind.get();
    }
@@ -310,9 +308,8 @@ public:
 };
 
 }
-}
 
-Core::Db::PreparedStatement::PreparedStatement( MYSQL_STMT* pStmt, Core::Db::Connection* pConn )
+Mysql::PreparedStatement::PreparedStatement( MYSQL_STMT* pStmt, Mysql::Connection* pConn )
         : Statement( pConn )
 {
    m_pStmt = pStmt;
@@ -322,34 +319,34 @@ Core::Db::PreparedStatement::PreparedStatement( MYSQL_STMT* pStmt, Core::Db::Con
    m_pResultBind.reset( new ResultBind( pStmt ) );
 }
 
-uint32_t Core::Db::PreparedStatement::errNo()
+uint32_t Mysql::PreparedStatement::errNo()
 {
    return mysql_stmt_errno( m_pStmt );
 }
 
-Core::Db::Connection *Core::Db::PreparedStatement::getConnection()
+Mysql::Connection* Mysql::PreparedStatement::getConnection()
 {
    return m_pConnection;
 }
 
-Core::Db::PreparedStatement::~PreparedStatement()
+Mysql::PreparedStatement::~PreparedStatement()
 {
    if( m_pStmt )
       closeIntern();
 }
 
-uint32_t Core::Db::PreparedStatement::getWarningCount()
+uint32_t Mysql::PreparedStatement::getWarningCount()
 {
    return mysql_warning_count( m_pConnection->getRawCon() );
 }
 
-uint64_t Core::Db::PreparedStatement::getUpdateCount()
+uint64_t Mysql::PreparedStatement::getUpdateCount()
 {
    throw std::runtime_error( "PreparedStatement::getUpdateCount() Not implemented" );
    return 0;
 }
 
-bool Core::Db::PreparedStatement::sendLongDataBeforeParamBind()
+bool Mysql::PreparedStatement::sendLongDataBeforeParamBind()
 {
    MYSQL_BIND* bind = m_pParamBind->getBindObject();
 
@@ -365,7 +362,7 @@ bool Core::Db::PreparedStatement::sendLongDataBeforeParamBind()
    return true;
 }
 
-void Core::Db::PreparedStatement::doQuery()
+void Mysql::PreparedStatement::doQuery()
 {
    if( m_paramCount && !m_pParamBind->isAllSet() )
       throw std::runtime_error( "Value not set for all parameters" );
@@ -379,37 +376,37 @@ void Core::Db::PreparedStatement::doQuery()
    warningsCount = getWarningCount();
 }
 
-void Core::Db::PreparedStatement::closeIntern()
+void Mysql::PreparedStatement::closeIntern()
 {
    if( m_pStmt )
       mysql_stmt_close( m_pStmt );
    clearParameters();
 }
 
-void Core::Db::PreparedStatement::clearParameters()
+void Mysql::PreparedStatement::clearParameters()
 {
    m_pParamBind->clearParameters();
 }
 
-bool Core::Db::PreparedStatement::execute()
+bool Mysql::PreparedStatement::execute()
 {
    doQuery();
    return mysql_stmt_field_count( m_pStmt ) > 0;
 }
 
-bool Core::Db::PreparedStatement::execute( const std::string &sql )
+bool Mysql::PreparedStatement::execute( const std::string &sql )
 {
    throw std::runtime_error("PreparedStatement::execute( const std::string &sql ) Not implemented");
    return false;
 }
 
-Core::Db::ResultSet* Core::Db::PreparedStatement::executeQuery( const std::string &sql )
+Mysql::ResultSet* Mysql::PreparedStatement::executeQuery( const std::string &sql )
 {
    // not to be implemented for prepared statements
    return nullptr;
 }
 
-Core::Db::ResultSet* Core::Db::PreparedStatement::executeQuery()
+Mysql::ResultSet* Mysql::PreparedStatement::executeQuery()
 {
    doQuery();
 
@@ -421,7 +418,7 @@ Core::Db::ResultSet* Core::Db::PreparedStatement::executeQuery()
    return tmp;
 }
 
-Core::Db::ResultSet* Core::Db::PreparedStatement::getResultSet()
+Mysql::ResultSet* Mysql::PreparedStatement::getResultSet()
 {
    my_bool bool_tmp = 1;
    mysql_stmt_attr_set( m_pStmt, STMT_ATTR_UPDATE_MAX_LENGTH, &bool_tmp );
@@ -431,7 +428,7 @@ Core::Db::ResultSet* Core::Db::PreparedStatement::getResultSet()
    return tmp;
 }
 
-MYSQL_STMT* Core::Db::PreparedStatement::getRawStmt()
+MYSQL_STMT* Mysql::PreparedStatement::getRawStmt()
 {
    return m_pStmt;
 }
@@ -456,7 +453,7 @@ static BufferSizePair allocate_buffer_for_type(enum_field_types t)
    }
 }
 
-void Core::Db::PreparedStatement::setInt( uint32_t parameterIndex, int32_t value )
+void Mysql::PreparedStatement::setInt( uint32_t parameterIndex, int32_t value )
 {
 
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
@@ -488,7 +485,7 @@ void Core::Db::PreparedStatement::setInt( uint32_t parameterIndex, int32_t value
 
 }
 
-void Core::Db::PreparedStatement::setUInt( uint32_t parameterIndex, uint32_t value )
+void Mysql::PreparedStatement::setUInt( uint32_t parameterIndex, uint32_t value )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
       throw std::runtime_error( "PreparedStatement::setInt: invalid 'parameterIndex'" );
@@ -519,7 +516,7 @@ void Core::Db::PreparedStatement::setUInt( uint32_t parameterIndex, uint32_t val
    memcpy( param->buffer, &value, p.second );
 }
 
-void Core::Db::PreparedStatement::setInt64( uint32_t parameterIndex, int64_t value )
+void Mysql::PreparedStatement::setInt64( uint32_t parameterIndex, int64_t value )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
       throw std::runtime_error( "PreparedStatement::setInt64: invalid 'parameterIndex'" );
@@ -549,7 +546,7 @@ void Core::Db::PreparedStatement::setInt64( uint32_t parameterIndex, int64_t val
    memcpy( param->buffer, &value, p.second );
 }
 
-void Core::Db::PreparedStatement::setUInt64( uint32_t parameterIndex, uint64_t value )
+void Mysql::PreparedStatement::setUInt64( uint32_t parameterIndex, uint64_t value )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
       throw std::runtime_error( "PreparedStatement::setInt64: invalid 'parameterIndex'" );
@@ -580,7 +577,7 @@ void Core::Db::PreparedStatement::setUInt64( uint32_t parameterIndex, uint64_t v
    memcpy( param->buffer, &value, p.second );
 }
 
-void Core::Db::PreparedStatement::setNull( uint32_t parameterIndex, int )
+void Mysql::PreparedStatement::setNull( uint32_t parameterIndex, int )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
       throw std::runtime_error( "PreparedStatement::setNull: invalid 'parameterIndex'" );
@@ -604,7 +601,7 @@ void Core::Db::PreparedStatement::setNull( uint32_t parameterIndex, int )
    param->length = nullptr;
 }
 
-void Core::Db::PreparedStatement::setString( uint32_t parameterIndex, const std::string& value )
+void Mysql::PreparedStatement::setString( uint32_t parameterIndex, const std::string& value )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
    {
@@ -641,7 +638,7 @@ void Core::Db::PreparedStatement::setString( uint32_t parameterIndex, const std:
    param->length = new unsigned long( static_cast< unsigned long >( value.length() ) );
 }
 
-void Core::Db::PreparedStatement::setDouble( uint32_t parameterIndex, double value )
+void Mysql::PreparedStatement::setDouble( uint32_t parameterIndex, double value )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
    {
@@ -673,22 +670,22 @@ void Core::Db::PreparedStatement::setDouble( uint32_t parameterIndex, double val
    memcpy( param->buffer, &value, p.second );
 }
 
-void Core::Db::PreparedStatement::setDateTime( uint32_t parameterIndex, const std::string& value )
+void Mysql::PreparedStatement::setDateTime( uint32_t parameterIndex, const std::string& value )
 {
    setString( parameterIndex, value );
 }
 
-void Core::Db::PreparedStatement::setBoolean( uint32_t parameterIndex, bool value )
+void Mysql::PreparedStatement::setBoolean( uint32_t parameterIndex, bool value )
 {
    setInt( parameterIndex, value );
 }
 
-void Core::Db::PreparedStatement::setBigInt( uint32_t parameterIndex, const std::string& value )
+void Mysql::PreparedStatement::setBigInt( uint32_t parameterIndex, const std::string& value )
 {
    setString( parameterIndex, value );
 }
 
-void Core::Db::PreparedStatement::setBlob( uint32_t parameterIndex, std::istream* blob )
+void Mysql::PreparedStatement::setBlob( uint32_t parameterIndex, std::istream* blob )
 {
    if( parameterIndex == 0 || parameterIndex > m_paramCount )
       throw std::runtime_error( "PreparedStatement::setBlob: invalid 'parameterIndex'" );

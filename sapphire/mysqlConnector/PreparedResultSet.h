@@ -5,12 +5,9 @@
 #include <boost/shared_ptr.hpp>
 #include "ResultSet.h"
 
-namespace Core
+namespace Mysql
 {
-   namespace Db
-   {
       class PreparedStatement;
-//      class PreparedResultSetMetaData;
       class ResultBind;
 
       class PreparedResultSet : public ResultSet
@@ -29,8 +26,6 @@ namespace Core
          PreparedStatement * m_pStmt;
 
          bool is_valid;
-
-//         boost::scoped_ptr< MySQL_PreparedResultSetMetaData > rs_meta;
 
          boost::shared_ptr< ResultBind > m_pResultBind;
 
@@ -78,8 +73,6 @@ namespace Core
          uint64_t getUInt64(uint32_t columnIndex) const;
          uint64_t getUInt64(const std::string& columnLabel) const;
 
-         //sql::ResultSetMetaData * getMetaData() const;
-
          size_t getRow() const;
 
          const Statement * getStatement() const;
@@ -106,8 +99,6 @@ namespace Core
          size_t rowsCount() const;
 
       };
-
-   }
 }
 
 

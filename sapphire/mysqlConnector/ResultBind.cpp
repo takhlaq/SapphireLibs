@@ -7,11 +7,8 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace Core
+namespace Mysql
 {
-   namespace Db
-   {
-
       struct st_buffer_size_type
       {
          char * buffer;
@@ -151,7 +148,5 @@ namespace Core
          if( mysql_stmt_bind_result( m_pStmt, m_pBind.get() ) )
             throw std::runtime_error( "Couldn't bind : " + std::to_string( mysql_stmt_errno( m_pStmt ) ) );
       }
-
-   }
 }
 

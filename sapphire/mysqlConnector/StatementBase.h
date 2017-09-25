@@ -3,11 +3,8 @@
 
 #include <string>
 
-namespace Core
+namespace Mysql
 {
-namespace Db
-{
-
    class Connection;
    class ResultSet;
 
@@ -30,7 +27,6 @@ namespace Db
 
       virtual uint32_t errNo() = 0;
    };
-}
 }
 
 #endif //SAPPHIRE_STATEMENTBASE_H

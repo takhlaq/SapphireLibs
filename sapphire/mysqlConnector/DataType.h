@@ -1,8 +1,6 @@
 #ifndef SAPPHIRE_DATATYPE_H
 #define SAPPHIRE_DATATYPE_H
-namespace Core
-{
-namespace Db
+namespace Mysql
 {
    class DataType
    {
@@ -39,6 +37,5 @@ namespace Db
          JSON
       };
    };
-}
 }
 #endif //SAPPHIRE_DATATYPE_H

@@ -6,10 +6,8 @@
 #include "Statement.h"
 #include <mysql.h>
 
-namespace Core
+namespace Mysql
 {
-   namespace Db
-   {
 
       class ParamBind;
       class ResultBind;
@@ -24,9 +22,6 @@ namespace Core
 
          int32_t resultSetConcurrency;
          int32_t resultSetType;
-
-         //boost::scoped_ptr< MySQL_PreparedResultSetMetaData > res_meta;
-         //boost::scoped_ptr< MySQL_ParameterMetaData > param_meta;
 
          boost::shared_ptr< ResultBind > m_pResultBind;
 
@@ -88,8 +83,6 @@ namespace Core
          PreparedStatement( const PreparedStatement& );
          void operator=( PreparedStatement& );
       };
-
-   }
 }
 
 #endif //SAPPHIRE_PREPAREDSTATEMENT_H

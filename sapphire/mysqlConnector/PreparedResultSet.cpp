@@ -27,7 +27,7 @@ namespace
    }
 }
 
-uint32_t Core::Db::PreparedResultSet::findColumn( const std::string &columnLabel ) const
+uint32_t Mysql::PreparedResultSet::findColumn( const std::string &columnLabel ) const
 {
    std::string searchColumn = columnLabel;
 
@@ -41,25 +41,25 @@ uint32_t Core::Db::PreparedResultSet::findColumn( const std::string &columnLabel
    return iter->second + 1;
 }
 
-Core::Db::PreparedResultSet::PreparedResultSet( boost::shared_ptr< ResultBind >& pBind,
-                                                Core::Db::PreparedStatement* par ) :
+Mysql::PreparedResultSet::PreparedResultSet( boost::shared_ptr< ResultBind >& pBind,
+                                             Mysql::PreparedStatement* par ) :
    ResultSet( nullptr, par ),
    m_pResultBind( pBind )
 {
 
 }
 
-bool Core::Db::PreparedResultSet::isBeforeFirstOrAfterLast() const
+bool Mysql::PreparedResultSet::isBeforeFirstOrAfterLast() const
 {
    return ( m_rowPosition == 0 );
 }
 
-Core::Db::PreparedResultSet::~PreparedResultSet()
+Mysql::PreparedResultSet::~PreparedResultSet()
 {
 
 }
 
-uint32_t Core::Db::PreparedResultSet::getUInt( const uint32_t columnIndex ) const
+uint32_t Mysql::PreparedResultSet::getUInt( const uint32_t columnIndex ) const
 {
 
    if( isBeforeFirstOrAfterLast() )
@@ -76,12 +76,12 @@ uint32_t Core::Db::PreparedResultSet::getUInt( const uint32_t columnIndex ) cons
    return static_cast< uint32_t >( getUInt64_intern( columnIndex, true ) );
 }
 
-uint32_t Core::Db::PreparedResultSet::getUInt( const std::string& columnLabel ) const
+uint32_t Mysql::PreparedResultSet::getUInt( const std::string& columnLabel ) const
 {
    return getUInt( findColumn( columnLabel ) );
 }
 
-int64_t Core::Db::PreparedResultSet::getInt64( const uint32_t columnIndex ) const
+int64_t Mysql::PreparedResultSet::getInt64( const uint32_t columnIndex ) const
 {
 
    if( isBeforeFirstOrAfterLast() )
@@ -98,18 +98,18 @@ int64_t Core::Db::PreparedResultSet::getInt64( const uint32_t columnIndex ) cons
    return getInt64_intern( columnIndex, true );
 }
 
-int64_t Core::Db::PreparedResultSet::getInt64( const std::string& columnLabel ) const
+int64_t Mysql::PreparedResultSet::getInt64( const std::string& columnLabel ) const
 {
    return getInt64( findColumn( columnLabel ) );
 }
 
-uint64_t Core::Db::PreparedResultSet::getUInt64_intern( const uint32_t columnIndex, bool ) const
+uint64_t Mysql::PreparedResultSet::getUInt64_intern( const uint32_t columnIndex, bool ) const
 {
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
    MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
 
-   switch( Util::mysql_type_to_datatype( field ) )
+   switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
       case DataType::REAL:
       case DataType::DOUBLE:
@@ -192,17 +192,17 @@ uint64_t Core::Db::PreparedResultSet::getUInt64_intern( const uint32_t columnInd
       default:
          break;
    }
-   throw std::runtime_error( "MySQL_Prepared_ResultSet::getUInt64_intern: unhandled type. Please, report" );
+   throw std::runtime_error( "PreparedResultSet::getUInt64_intern: unhandled type. Please, report" );
    return 0;
 }
 
-int64_t Core::Db::PreparedResultSet::getInt64_intern( const uint32_t columnIndex, bool ) const
+int64_t Mysql::PreparedResultSet::getInt64_intern( const uint32_t columnIndex, bool ) const
 {
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
    MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
 
-   switch( Util::mysql_type_to_datatype( field ) )
+   switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
       case DataType::REAL:
       case DataType::DOUBLE:
@@ -288,7 +288,7 @@ int64_t Core::Db::PreparedResultSet::getInt64_intern( const uint32_t columnIndex
    return 0;
 }
 
-uint64_t Core::Db::PreparedResultSet::getUInt64( const uint32_t columnIndex ) const
+uint64_t Mysql::PreparedResultSet::getUInt64( const uint32_t columnIndex ) const
 {
 
    if( isBeforeFirstOrAfterLast() )
@@ -304,12 +304,12 @@ uint64_t Core::Db::PreparedResultSet::getUInt64( const uint32_t columnIndex ) co
    return getUInt64_intern( columnIndex, true );
 }
 
-uint64_t Core::Db::PreparedResultSet::getUInt64( const std::string& columnLabel ) const
+uint64_t Mysql::PreparedResultSet::getUInt64( const std::string& columnLabel ) const
 {
    return getUInt64( findColumn( columnLabel ) );
 }
 
-std::string Core::Db::PreparedResultSet::getString( const uint32_t columnIndex ) const
+std::string Mysql::PreparedResultSet::getString( const uint32_t columnIndex ) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error( "PreparedResultSet::getString: can't fetch because not on result set" );
@@ -324,7 +324,7 @@ std::string Core::Db::PreparedResultSet::getString( const uint32_t columnIndex )
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
    MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
 
-   switch( Util::mysql_type_to_datatype( field ) )
+   switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
       case DataType::TIMESTAMP:
       {
@@ -350,7 +350,7 @@ std::string Core::Db::PreparedResultSet::getString( const uint32_t columnIndex )
       case DataType::TIME:
       {
          char buf[18];
-         MYSQL_TIME* t = static_cast<MYSQL_TIME*>( m_pResultBind->m_pBind[columnIndex - 1].buffer );
+         MYSQL_TIME* t = static_cast< MYSQL_TIME* >( m_pResultBind->m_pBind[columnIndex - 1].buffer );
          if( t->second_part )
             snprintf( buf, sizeof( buf ), "%s%02d:%02d:%02d.%06lu", t->neg ? "-" : "", t->hour, t->minute, t->second, t->second_part );
          else
@@ -403,12 +403,12 @@ std::string Core::Db::PreparedResultSet::getString( const uint32_t columnIndex )
    return 0;
 }
 
-std::string Core::Db::PreparedResultSet::getString( const std::string& columnLabel) const
+std::string Mysql::PreparedResultSet::getString( const std::string& columnLabel) const
 {
    return getString( findColumn( columnLabel ) );
 }
 
-int32_t Core::Db::PreparedResultSet::getInt( uint32_t columnIndex ) const
+int32_t Mysql::PreparedResultSet::getInt( uint32_t columnIndex ) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error( "PreparedResultSet::getInt: can't fetch because not on result set" );
@@ -424,12 +424,12 @@ int32_t Core::Db::PreparedResultSet::getInt( uint32_t columnIndex ) const
    return static_cast< int32_t >( getInt64_intern( columnIndex, true ) );
 }
 
-int32_t Core::Db::PreparedResultSet::getInt( const std::string& columnLabel ) const
+int32_t Mysql::PreparedResultSet::getInt( const std::string& columnLabel ) const
 {
    return getInt( findColumn( columnLabel ) );
 }
 
-long double Core::Db::PreparedResultSet::getDouble(const uint32_t columnIndex) const
+long double Mysql::PreparedResultSet::getDouble(const uint32_t columnIndex) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error( "PreparedResultSet::getDouble: can't fetch because not on result set" );
@@ -446,7 +446,7 @@ long double Core::Db::PreparedResultSet::getDouble(const uint32_t columnIndex) c
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
    MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
 
-   switch( Util::mysql_type_to_datatype( field ) )
+   switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
       case DataType::BIT:
       case DataType::YEAR:
@@ -486,7 +486,7 @@ long double Core::Db::PreparedResultSet::getDouble(const uint32_t columnIndex) c
       case DataType::ENUM:
       case DataType::JSON:
       {
-         long double ret = Util::strtonum( getString( columnIndex ).c_str() );
+         long double ret = Mysql::Util::strtonum( getString( columnIndex ).c_str() );
          return ret;
       }
       case DataType::REAL:
@@ -503,31 +503,31 @@ long double Core::Db::PreparedResultSet::getDouble(const uint32_t columnIndex) c
       }
    }
 
-   throw std::runtime_error("PreparedResultSet::getDouble: unhandled type. Please, report");
+   throw std::runtime_error( "PreparedResultSet::getDouble: unhandled type. Please, report" );
    return .0;
 }
 
-long double Core::Db::PreparedResultSet::getDouble( const std::string& columnLabel ) const
+long double Mysql::PreparedResultSet::getDouble( const std::string& columnLabel ) const
 {
    return getDouble( findColumn( columnLabel ) );
 }
 
-size_t Core::Db::PreparedResultSet::getRow() const
+size_t Mysql::PreparedResultSet::getRow() const
 {
    return static_cast< size_t >( m_rowPosition );
 }
 
-size_t Core::Db::PreparedResultSet::rowsCount() const
+size_t Mysql::PreparedResultSet::rowsCount() const
 {
    return static_cast< uint32_t >( m_numRows );
 }
 
-const Core::Db::Statement* Core::Db::PreparedResultSet::getStatement() const
+const Mysql::Statement* Mysql::PreparedResultSet::getStatement() const
 {
    return m_pStmt;
 }
 
-std::istream* Core::Db::PreparedResultSet::getBlob( const uint32_t columnIndex ) const
+std::istream* Mysql::PreparedResultSet::getBlob( const uint32_t columnIndex ) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error( "PreparedResultSet::getBlob: can't fetch because not on result set" );
@@ -535,12 +535,12 @@ std::istream* Core::Db::PreparedResultSet::getBlob( const uint32_t columnIndex )
    return new std::istringstream( getString( columnIndex ) );
 }
 
-std::istream* Core::Db::PreparedResultSet::getBlob( const std::string& columnLabel ) const
+std::istream* Mysql::PreparedResultSet::getBlob( const std::string& columnLabel ) const
 {
    return new std::istringstream( getString( columnLabel ) );
 }
 
-std::vector< char > Core::Db::PreparedResultSet::getBlobVector( uint32_t columnIndex ) const
+std::vector< char > Mysql::PreparedResultSet::getBlobVector( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "PreparedResultSet::getBlobVector: invalid value of 'columnIndex'" );
@@ -557,36 +557,36 @@ std::vector< char > Core::Db::PreparedResultSet::getBlobVector( uint32_t columnI
    return data;
 }
 
-std::vector< char > Core::Db::PreparedResultSet::getBlobVector( const std::string& columnLabel ) const
+std::vector< char > Mysql::PreparedResultSet::getBlobVector( const std::string& columnLabel ) const
 {
    return getBlobVector( findColumn( columnLabel ) );
 }
 
-bool Core::Db::PreparedResultSet::getBoolean( const uint32_t columnIndex ) const
+bool Mysql::PreparedResultSet::getBoolean( const uint32_t columnIndex ) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error( "PreparedResultSet::getBoolean: can't fetch because not on result set" );
    return getInt(columnIndex ) != 0;
 }
 
-bool Core::Db::PreparedResultSet::getBoolean( const std::string& columnLabel ) const
+bool Mysql::PreparedResultSet::getBoolean( const std::string& columnLabel ) const
 {
    if( isBeforeFirstOrAfterLast() )
       throw std::runtime_error("PreparedResultSet::getBoolean: can't fetch because not on result set");
    return getInt(columnLabel ) != 0;
 }
 
-bool Core::Db::PreparedResultSet::isLast() const
+bool Mysql::PreparedResultSet::isLast() const
 {
    return ( m_rowPosition == m_numRows );
 }
 
-bool Core::Db::PreparedResultSet::isFirst() const
+bool Mysql::PreparedResultSet::isFirst() const
 {
    return ( m_rowPosition == 1 );
 }
 
-bool Core::Db::PreparedResultSet::isNull( const uint32_t columnIndex ) const
+bool Mysql::PreparedResultSet::isNull( const uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
       throw std::runtime_error( "PreparedResultSet::isNull: invalid value of 'columnIndex'" );
@@ -596,7 +596,7 @@ bool Core::Db::PreparedResultSet::isNull( const uint32_t columnIndex ) const
    return *m_pResultBind->m_pBind[columnIndex - 1].is_null != 0;
 }
 
-bool Core::Db::PreparedResultSet::isNull( const std::string& columnLabel ) const
+bool Mysql::PreparedResultSet::isNull( const std::string& columnLabel ) const
 {
    uint32_t index = findColumn( columnLabel );
    if( index == 0 )
@@ -604,7 +604,7 @@ bool Core::Db::PreparedResultSet::isNull( const std::string& columnLabel ) const
    return isNull( index );
 }
 
-bool Core::Db::PreparedResultSet::next()
+bool Mysql::PreparedResultSet::next()
 {
    bool ret = false;
 

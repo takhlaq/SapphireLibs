@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
-long double Util::strtold(const char *nptr, char **endptr)
+long double Mysql::Util::strtold(const char *nptr, char **endptr)
 {
    /*
   * Experienced odd compilation errors on one of windows build hosts -
@@ -33,7 +33,7 @@ long double Util::strtold(const char *nptr, char **endptr)
 
 }
 
-long double Util::strtonum( const std::string &str, int radix )
+long double Mysql::Util::strtonum( const std::string &str, int radix )
 {
    typedef std::istreambuf_iterator< char > iter_t;
    static std::locale c_locale( "C" );
@@ -92,7 +92,7 @@ long double Util::strtonum( const std::string &str, int radix )
 #define check_mb_utf32_valid		NULL
 
 /* {{{ our_charsets60 */
-const Util::OUR_CHARSET our_charsets60[] =
+const Mysql::Util::OUR_CHARSET our_charsets60[] =
   {
     {   1, "big5","big5_chinese_ci", 1, 2, "", cppconn_mbcharlen_big5, check_mb_big5},
     {   3, "dec8", "dec8_swedisch_ci", 1, 1, "", NULL, NULL},
@@ -316,7 +316,7 @@ const Util::OUR_CHARSET our_charsets60[] =
 };
 #define MAGIC_BINARY_CHARSET_NR 63
 
-const Util::OUR_CHARSET * Util::find_charset(unsigned int charsetnr)
+const Mysql::Util::OUR_CHARSET* Mysql::Util::find_charset(unsigned int charsetnr)
 {
    const OUR_CHARSET * c = our_charsets60;
 
@@ -329,106 +329,114 @@ const Util::OUR_CHARSET * Util::find_charset(unsigned int charsetnr)
    return NULL;
 }
 
-int Util::mysql_type_to_datatype( const MYSQL_FIELD * const field )
+int Mysql::Util::mysql_type_to_datatype( const MYSQL_FIELD* const field )
 {
-   switch (field->type) {
+   switch( field->type )
+   {
       case MYSQL_TYPE_BIT:
-         if (field->flags !=(BINARY_FLAG|UNSIGNED_FLAG))
-            return Core::Db::DataType::BIT;
-         return Core::Db::DataType::BINARY;
+         if( field->flags != ( BINARY_FLAG|UNSIGNED_FLAG ) )
+            return Mysql::DataType::BIT;
+         return Mysql::DataType::BINARY;
       case MYSQL_TYPE_DECIMAL:
       case MYSQL_TYPE_NEWDECIMAL:
-         return Core::Db::DataType::DECIMAL;
+         return Mysql::DataType::DECIMAL;
       case MYSQL_TYPE_TINY:
-         return Core::Db::DataType::TINYINT;
+         return Mysql::DataType::TINYINT;
       case MYSQL_TYPE_SHORT:
-         return Core::Db::DataType::SMALLINT;
+         return Mysql::DataType::SMALLINT;
       case MYSQL_TYPE_INT24:
-         return Core::Db::DataType::MEDIUMINT;
+         return Mysql::DataType::MEDIUMINT;
       case MYSQL_TYPE_LONG:
-         return Core::Db::DataType::INTEGER;
+         return Mysql::DataType::INTEGER;
       case MYSQL_TYPE_LONGLONG:
-         return Core::Db::DataType::BIGINT;
+         return Mysql::DataType::BIGINT;
       case MYSQL_TYPE_FLOAT:
-         return Core::Db::DataType::REAL;
+         return Mysql::DataType::REAL;
       case MYSQL_TYPE_DOUBLE:
-         return Core::Db::DataType::DOUBLE;
+         return Mysql::DataType::DOUBLE;
       case MYSQL_TYPE_NULL:
-         return Core::Db::DataType::SQLNULL;
+         return Mysql::DataType::SQLNULL;
       case MYSQL_TYPE_TIMESTAMP:
-         return Core::Db::DataType::TIMESTAMP;
+         return Mysql::DataType::TIMESTAMP;
       case MYSQL_TYPE_DATE:
-         return Core::Db::DataType::DATE;
+         return Mysql::DataType::DATE;
       case MYSQL_TYPE_TIME:
-         return Core::Db::DataType::TIME;
+         return Mysql::DataType::TIME;
       case MYSQL_TYPE_YEAR:
-         return Core::Db::DataType::YEAR;
+         return Mysql::DataType::YEAR;
       case MYSQL_TYPE_DATETIME:
-         return Core::Db::DataType::TIMESTAMP;
+         return Mysql::DataType::TIMESTAMP;
       case MYSQL_TYPE_TINY_BLOB:// should no appear over the wire
       {
-         bool isBinary = (field->flags & BINARY_FLAG) &&
+         bool isBinary = ( field->flags & BINARY_FLAG ) &&
                          field->charsetnr == MAGIC_BINARY_CHARSET_NR;
-         const Util::OUR_CHARSET * const cs =
-                 Util::find_charset(field->charsetnr);
+         const Mysql::Util::OUR_CHARSET * const cs =
+                 Mysql::Util::find_charset(field->charsetnr);
          if (!cs) {
             std::ostringstream msg("Server sent unknown charsetnr (");
             msg << field->charsetnr << ") . Please report";
             throw std::runtime_error( msg.str() );
          }
-         return isBinary ? Core::Db::DataType::VARBINARY : Core::Db::DataType::VARCHAR;
+         return isBinary ? Mysql::DataType::VARBINARY : Mysql::DataType::VARCHAR;
       }
       case MYSQL_TYPE_MEDIUM_BLOB:// should no appear over the wire
       case MYSQL_TYPE_LONG_BLOB:// should no appear over the wire
       case MYSQL_TYPE_BLOB:
       {
-         bool isBinary = (field->flags & BINARY_FLAG) &&
+         bool isBinary = ( field->flags & BINARY_FLAG ) &&
                          field->charsetnr == MAGIC_BINARY_CHARSET_NR;
-         const Util::OUR_CHARSET * const cs =
-                 Util::find_charset(field->charsetnr);
-         if (!cs) {
+         const Mysql::Util::OUR_CHARSET * const cs =
+                 Mysql::Util::find_charset( field->charsetnr );
+         if( !cs )
+         {
             std::ostringstream msg("Server sent unknown charsetnr (");
             msg << field->charsetnr << ") . Please report";
             throw std::runtime_error( msg.str() );
          }
-         return isBinary ? Core::Db::DataType::LONGVARBINARY : Core::Db::DataType::LONGVARCHAR;
+         return isBinary ? Mysql::DataType::LONGVARBINARY : Mysql::DataType::LONGVARCHAR;
       }
       case MYSQL_TYPE_VARCHAR:
       case MYSQL_TYPE_VAR_STRING:
-         if (field->flags & SET_FLAG) {
-            return Core::Db::DataType::SET;
+         if( field->flags & SET_FLAG ) 
+         {
+            return Mysql::DataType::SET;
          }
-         if (field->flags & ENUM_FLAG) {
-            return Core::Db::DataType::ENUM;
+         if( field->flags & ENUM_FLAG )
+         {
+            return Mysql::DataType::ENUM;
          }
-         if ((field->flags & BINARY_FLAG) && field->charsetnr == MAGIC_BINARY_CHARSET_NR) {
-            return Core::Db::DataType::VARBINARY;
+         if( ( field->flags & BINARY_FLAG ) && field->charsetnr == MAGIC_BINARY_CHARSET_NR )
+         {
+            return Mysql::DataType::VARBINARY;
          }
-         return Core::Db::DataType::VARCHAR;
+         return Mysql::DataType::VARCHAR;
       case MYSQL_TYPE_STRING:
-         if (field->flags & SET_FLAG) {
-            return Core::Db::DataType::SET;
+         if( field->flags & SET_FLAG )
+         {
+            return Mysql::DataType::SET;
          }
-         if (field->flags & ENUM_FLAG) {
-            return Core::Db::DataType::ENUM;
+         if( field->flags & ENUM_FLAG )
+         {
+            return Mysql::DataType::ENUM;
          }
-         if ((field->flags & BINARY_FLAG) && field->charsetnr == MAGIC_BINARY_CHARSET_NR) {
-            return Core::Db::DataType::BINARY;
+         if( ( field->flags & BINARY_FLAG ) && field->charsetnr == MAGIC_BINARY_CHARSET_NR )
+         {
+            return Mysql::DataType::BINARY;
          }
-         return Core::Db::DataType::CHAR;
+         return Mysql::DataType::CHAR;
       case MYSQL_TYPE_ENUM:
          /* This hould never happen - MYSQL_TYPE_ENUM is not sent over the wire, just used in the server */
-         return Core::Db::DataType::ENUM;
+         return Mysql::DataType::ENUM;
       case MYSQL_TYPE_SET:
          /* This hould never happen - MYSQL_TYPE_SET is not sent over the wire, just used in the server */
-         return Core::Db::DataType::SET;
+         return Mysql::DataType::SET;
       case MYSQL_TYPE_GEOMETRY:
-         return Core::Db::DataType::GEOMETRY;
+         return Mysql::DataType::GEOMETRY;
 #if LIBMYSQL_VERSION_ID > 50700
       case MYSQL_TYPE_JSON:
-      return Core::Db::DataType::JSON;
+      return Mysql::DataType::JSON;
 #endif //LIBMYSQL_VERSION_ID > 50700
       default:
-         return Core::Db::DataType::UNKNOWN;
+         return Mysql::DataType::UNKNOWN;
    }
 }

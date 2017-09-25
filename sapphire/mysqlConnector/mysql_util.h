@@ -106,6 +106,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                                     (((uint32_t) (((unsigned char*) (A))[1])) << 16) +\
                                     (((uint32_t) (((unsigned char*) (A))[0])) << 24))) <<\
                                     32))
+namespace Mysql
+{
 namespace Util
 {
    long double strtold( const char *nptr, char **endptr );
@@ -126,5 +128,6 @@ namespace Util
 
    const OUR_CHARSET * find_charset(unsigned int charsetnr);
 
+}
 }
 #endif //SAPPHIRE_MYSQL_UTIL_H

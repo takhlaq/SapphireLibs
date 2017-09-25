@@ -6,9 +6,7 @@
 #include <string>
 #include <map>
 
-namespace Core
-{
-namespace Db
+namespace Mysql
 {
 
 typedef std::map< enum mysql_option, std::string > optionMap;
@@ -32,7 +30,6 @@ private:
    void operator=( MySqlBase& );
 };
 
-}
 }
 
 #endif //SAPPHIRE_MYSQLBASE_H

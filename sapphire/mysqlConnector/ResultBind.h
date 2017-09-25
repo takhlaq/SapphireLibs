@@ -7,11 +7,8 @@
 #include "mysql.h"
 #include "PreparedStatement.h"
 
-namespace Core
+namespace Mysql
 {
-namespace Db
-{
-
    class ResultBind
    {
       uint32_t m_numFields;
@@ -30,8 +27,6 @@ namespace Db
       void bindResult();
 
    };
-
-}
 }
 
 #endif //SAPPHIRE_RESULTBIND_H
