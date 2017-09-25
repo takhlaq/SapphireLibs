@@ -149,13 +149,15 @@ namespace xiv
                      fields.emplace_back( extract<uint64_t>( stream, "uint64_t", false ) );
                      break;
 
-                  default: //TODO: Implement missing Data Types
-                     int val = extract<bool>( stream, "bool" );
-                     int shift = static_cast<uint16_t>( member_entry.type ) - 0x19;
-                     int i = 1 << shift;
+                  default: 
+                     auto type = static_cast< uint16_t >( member_entry.type );
+                     if( type < 0x19 || type > 0x20 )
+                        throw std::runtime_error("Unknown DataType: " + std::to_string( type ));
+                     int32_t val = extract< bool >( stream, "bool" );
+                     int32_t shift = type - 0x19;
+                     int32_t i = 1 << shift;
                      val &= i;
                      fields.emplace_back( ( val & i ) == i );
-                     //throw std::runtime_error("Unknown DataType: " + std::to_string(static_cast<uint16_t>(member_entry.type)));
                      break;
                   }
                }
@@ -259,15 +261,14 @@ namespace xiv
                      break;
 
                   default:
-                     //throw std::runtime_error("Unknown DataType: " + std::to_string(static_cast<uint16_t>(member_entry.second.type)));
                      auto type = static_cast< uint16_t >( member_entry.type );
                      if( type < 0x19 || type > 0x20 )
-                        throw std::runtime_error("Unknown DataType: " + std::to_string(type));
-                     int32_t val = extract< bool >(stream, "bool");
+                        throw std::runtime_error("Unknown DataType: " + std::to_string( type ));
+                     int32_t val = extract< bool >( stream, "bool" );
                      int32_t shift = type - 0x19;
                      int32_t i = 1 << shift;
                      val &= i;
-                     fields.emplace_back(( val & i ) == i);
+                     fields.emplace_back( ( val & i ) == i );
                      break;
                   }
                }
