@@ -149,9 +149,15 @@ namespace xiv
                      fields.emplace_back( extract<uint64_t>( stream, "uint64_t", false ) );
                      break;
 
-                  default:
-                     //throw std::runtime_error("Unknown DataType: " + std::to_string(static_cast<uint16_t>(member_entry.second.type)));
-                     fields.emplace_back( extract<bool>( stream, "bool" ) );
+                  default: 
+                     auto type = static_cast< uint16_t >( member_entry.type );
+                     if( type < 0x19 || type > 0x20 )
+                        throw std::runtime_error("Unknown DataType: " + std::to_string( type ));
+                     int32_t val = extract< bool >( stream, "bool" );
+                     int32_t shift = type - 0x19;
+                     int32_t i = 1 << shift;
+                     val &= i;
+                     fields.emplace_back( ( val & i ) == i );
                      break;
                   }
                }
@@ -255,8 +261,14 @@ namespace xiv
                      break;
 
                   default:
-                     //throw std::runtime_error("Unknown DataType: " + std::to_string(static_cast<uint16_t>(member_entry.second.type)));
-                     fields.emplace_back( extract<bool>( stream, "bool" ) );
+                     auto type = static_cast< uint16_t >( member_entry.type );
+                     if( type < 0x19 || type > 0x20 )
+                        throw std::runtime_error("Unknown DataType: " + std::to_string( type ));
+                     int32_t val = extract< bool >( stream, "bool" );
+                     int32_t shift = type - 0x19;
+                     int32_t i = 1 << shift;
+                     val &= i;
+                     fields.emplace_back( ( val & i ) == i );
                      break;
                   }
                }
