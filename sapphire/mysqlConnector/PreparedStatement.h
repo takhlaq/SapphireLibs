@@ -1,5 +1,5 @@
-#ifndef SAPPHIRE_PREPAREDSTATEMENT_H
-#define SAPPHIRE_PREPAREDSTATEMENT_H
+#ifndef SAPPHIRE_DB_PREPAREDSTATEMENT_H
+#define SAPPHIRE_DB_PREPAREDSTATEMENT_H
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -85,4 +85,4 @@ namespace Mysql
       };
 }
 
-#endif //SAPPHIRE_PREPAREDSTATEMENT_H
+#endif //SAPPHIRE_DB_PREPAREDSTATEMENT_H

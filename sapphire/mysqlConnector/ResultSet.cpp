@@ -10,6 +10,8 @@
 
 Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
 {
+   if( !res )
+      throw std::runtime_error( "No valid resultset." );
    m_pRes = res;
    m_numRows = mysql_num_rows( res );
    m_numFields = mysql_num_fields( res );
@@ -31,6 +33,8 @@ Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
 
 Mysql::ResultSet::~ResultSet()
 {
+   if( m_pStmt )
+      delete m_pStmt;
    mysql_free_result( m_pRes );
 }
 
