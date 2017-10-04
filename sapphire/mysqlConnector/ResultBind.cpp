@@ -135,7 +135,7 @@ namespace Mysql
          {
 //            MYSQL_FIELD * field = resultMeta->fetch_field();
 
-            MYSQL_FIELD * field = mysql_fetch_field( info );
+            MYSQL_FIELD * field = mysql_fetch_field_direct( info, i );
             struct st_buffer_size_type p = allocate_buffer_for_field(field);
             m_pBind[i].buffer_type = p.type;
             m_pBind[i].buffer = p.buffer;

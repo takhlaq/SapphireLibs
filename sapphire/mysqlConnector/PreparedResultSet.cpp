@@ -5,6 +5,7 @@
 #include <cctype>
 #include <clocale>
 #include <string.h>
+#include <mysql.h>
 
 namespace
 {
@@ -44,8 +45,28 @@ uint32_t Mysql::PreparedResultSet::findColumn( const std::string &columnLabel ) 
 Mysql::PreparedResultSet::PreparedResultSet( boost::shared_ptr< ResultBind >& pBind,
                                              Mysql::PreparedStatement* par ) :
    ResultSet( nullptr, par ),
-   m_pResultBind( pBind )
+   m_pResultBind( pBind ),
+   m_pStmt( par )
 {
+   pBind->bindResult();
+
+   m_numRows = mysql_stmt_num_rows( par->getRawStmt() );
+   m_numFields = mysql_stmt_field_count( par->getRawStmt() );
+   auto resMeta = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
+
+   for( uint32_t i = 0; i < m_numFields; ++i )
+   {
+
+      auto field = resMeta->fields[i];
+      std::string fieldName( field.name );
+
+      std::transform( fieldName.begin(), fieldName.end(), fieldName.begin(),
+                      []( unsigned char c ){ return std::toupper(c); } );
+
+      m_fieldNameToIndex[fieldName] = i;
+
+   }
+
 
 }
 
@@ -107,7 +128,7 @@ uint64_t Mysql::PreparedResultSet::getUInt64_intern( const uint32_t columnIndex,
 {
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
-   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
+   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex - 1 );
 
    switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
@@ -200,7 +221,7 @@ int64_t Mysql::PreparedResultSet::getInt64_intern( const uint32_t columnIndex, b
 {
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
-   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
+   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex - 1 );
 
    switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
@@ -322,7 +343,7 @@ std::string Mysql::PreparedResultSet::getString( const uint32_t columnIndex ) co
       return std::string("");
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
-   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
+   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex - 1 );
 
    switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
@@ -444,7 +465,7 @@ long double Mysql::PreparedResultSet::getDouble(const uint32_t columnIndex) cons
       return 0.0;
 
    MYSQL_RES* res = mysql_stmt_result_metadata( m_pStmt->getRawStmt() );
-   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex );
+   MYSQL_FIELD* field = mysql_fetch_field_direct( res, columnIndex - 1);
 
    switch( Mysql::Util::mysql_type_to_datatype( field ) )
    {
@@ -510,6 +531,16 @@ long double Mysql::PreparedResultSet::getDouble(const uint32_t columnIndex) cons
 long double Mysql::PreparedResultSet::getDouble( const std::string& columnLabel ) const
 {
    return getDouble( findColumn( columnLabel ) );
+}
+
+float Mysql::PreparedResultSet::getFloat( const uint32_t columnIndex ) const
+{
+   return static_cast< float >( getDouble( columnIndex ) );
+}
+
+float Mysql::PreparedResultSet::getFloat( const std::string& columnLabel ) const
+{
+   return static_cast< float >( getDouble( findColumn( columnLabel ) ) );
 }
 
 size_t Mysql::PreparedResultSet::getRow() const

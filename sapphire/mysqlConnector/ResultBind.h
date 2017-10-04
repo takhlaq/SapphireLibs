@@ -20,6 +20,8 @@ namespace Mysql
    public:
       boost::scoped_array< MYSQL_BIND > m_pBind;
 
+      MYSQL_STMT* getStmt() { return m_pStmt; }
+
       ResultBind( MYSQL_STMT* pStmt );
 
       ~ResultBind();

@@ -11,7 +11,7 @@
 Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
 {
    if( !res )
-      throw std::runtime_error( "No valid resultset." );
+      return;
    m_pRes = res;
    m_numRows = mysql_num_rows( res );
    m_numFields = mysql_num_fields( res );

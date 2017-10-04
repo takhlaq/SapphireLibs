@@ -61,6 +61,9 @@ namespace Mysql
          long double getDouble(uint32_t columnIndex) const;
          long double getDouble(const std::string& columnLabel) const;
 
+         float getFloat( uint32_t columnIndex ) const;
+         float getFloat( const std::string& columnLabel ) const;
+
          int32_t getInt(uint32_t columnIndex) const;
          int32_t getInt(const std::string& columnLabel) const;
 
