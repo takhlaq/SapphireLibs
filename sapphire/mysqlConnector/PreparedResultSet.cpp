@@ -67,7 +67,6 @@ Mysql::PreparedResultSet::PreparedResultSet( boost::shared_ptr< ResultBind >& pB
 
    }
 
-
 }
 
 bool Mysql::PreparedResultSet::isBeforeFirstOrAfterLast() const
@@ -77,7 +76,7 @@ bool Mysql::PreparedResultSet::isBeforeFirstOrAfterLast() const
 
 Mysql::PreparedResultSet::~PreparedResultSet()
 {
-
+   free();
 }
 
 uint32_t Mysql::PreparedResultSet::getUInt( const uint32_t columnIndex ) const
@@ -95,6 +94,46 @@ uint32_t Mysql::PreparedResultSet::getUInt( const uint32_t columnIndex ) const
       return 0;
    }
    return static_cast< uint32_t >( getUInt64_intern( columnIndex, true ) );
+}
+
+uint16_t Mysql::PreparedResultSet::getUInt16( const uint32_t columnIndex ) const
+{
+   return static_cast< uint16_t >( getUInt( columnIndex) );
+}
+
+uint16_t Mysql::PreparedResultSet::getUInt16( const std::string& columnLabel ) const
+{
+   return static_cast< uint16_t >( getUInt( columnLabel) );
+}
+
+uint8_t Mysql::PreparedResultSet::getUInt8( const uint32_t columnIndex ) const
+{
+   return static_cast< uint8_t >( getUInt( columnIndex) );
+}
+
+uint8_t Mysql::PreparedResultSet::getUInt8( const std::string& columnLabel ) const
+{
+   return static_cast< uint8_t >( getUInt( columnLabel) );
+}
+
+int16_t Mysql::PreparedResultSet::getInt16( const uint32_t columnIndex ) const
+{
+   return static_cast< int16_t >( getInt( columnIndex) );
+}
+
+int16_t Mysql::PreparedResultSet::getInt16( const std::string& columnLabel ) const
+{
+   return static_cast< int16_t >( getInt( columnLabel) );
+}
+
+int8_t Mysql::PreparedResultSet::getInt8( const uint32_t columnIndex ) const
+{
+   return static_cast< int8_t >( getInt( columnIndex) );
+}
+
+int8_t Mysql::PreparedResultSet::getInt8( const std::string& columnLabel ) const
+{
+   return static_cast< int8_t >( getInt( columnLabel) );
 }
 
 uint32_t Mysql::PreparedResultSet::getUInt( const std::string& columnLabel ) const
@@ -652,4 +691,15 @@ bool Mysql::PreparedResultSet::next()
    ++m_rowPosition;
 
    return ret;
+}
+
+void Mysql::PreparedResultSet::clearWarnings()
+{
+
+}
+
+void Mysql::PreparedResultSet::free()
+{
+   if( m_pStmt->getRawStmt() )
+      mysql_stmt_free_result( m_pStmt->getRawStmt() );
 }

@@ -33,9 +33,6 @@ Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
 
 Mysql::ResultSet::~ResultSet()
 {
-   if( m_pStmt )
-      delete m_pStmt;
-   mysql_free_result( m_pRes );
 }
 
 MYSQL_FIELD* Mysql::ResultSet::getFieldMeta( uint32_t columnIndex ) const

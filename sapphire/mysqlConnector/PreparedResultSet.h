@@ -35,13 +35,15 @@ namespace Mysql
          bool isBeforeFirstOrAfterLast() const;
          void seek();
 
-         int64_t getInt64_intern(const uint32_t columnIndex, bool cutTooBig) const;
-         uint64_t getUInt64_intern(const uint32_t columnIndex, bool cutTooBig) const;
+         int64_t getInt64_intern( const uint32_t columnIndex, bool cutTooBig ) const;
+         uint64_t getUInt64_intern( const uint32_t columnIndex, bool cutTooBig ) const;
 
       public:
          PreparedResultSet( boost::shared_ptr< ResultBind >& pBind, PreparedStatement* par );
 
-         virtual ~PreparedResultSet();
+         ~PreparedResultSet() override;
+
+         void free();
 
          void clearWarnings();
 
@@ -49,39 +51,51 @@ namespace Mysql
 
          uint32_t findColumn( const std::string& columnLabel ) const;
 
-         std::istream * getBlob(uint32_t columnIndex) const;
-         std::istream * getBlob(const std::string& columnLabel) const;
+         std::istream * getBlob( uint32_t columnIndex ) const;
+         std::istream * getBlob( const std::string& columnLabel ) const;
 
          std::vector< char > getBlobVector( uint32_t columnIndex ) const;
          std::vector< char > getBlobVector( const std::string& columnLabel ) const;
 
-         bool getBoolean(uint32_t columnIndex) const;
-         bool getBoolean(const std::string& columnLabel) const;
+         bool getBoolean( uint32_t columnIndex ) const;
+         bool getBoolean( const std::string& columnLabel ) const;
 
-         long double getDouble(uint32_t columnIndex) const;
-         long double getDouble(const std::string& columnLabel) const;
+         long double getDouble( uint32_t columnIndex ) const;
+         long double getDouble( const std::string& columnLabel ) const;
 
          float getFloat( uint32_t columnIndex ) const;
          float getFloat( const std::string& columnLabel ) const;
 
-         int32_t getInt(uint32_t columnIndex) const;
-         int32_t getInt(const std::string& columnLabel) const;
+         int32_t getInt( uint32_t columnIndex ) const;
+         int32_t getInt( const std::string& columnLabel ) const;
 
-         uint32_t getUInt(uint32_t columnIndex) const;
-         uint32_t getUInt(const std::string& columnLabel) const;
+         int16_t getInt16( uint32_t columnIndex ) const;
+         int16_t getInt16( const std::string& columnLabel ) const;
 
-         int64_t getInt64(uint32_t columnIndex) const;
-         int64_t getInt64(const std::string& columnLabel) const;
+         int8_t getInt8( uint32_t columnIndex ) const;
+         int8_t getInt8( const std::string& columnLabel ) const;
 
-         uint64_t getUInt64(uint32_t columnIndex) const;
-         uint64_t getUInt64(const std::string& columnLabel) const;
+         uint32_t getUInt( uint32_t columnIndex ) const;
+         uint32_t getUInt( const std::string& columnLabel ) const;
+
+         uint8_t getUInt8( uint32_t columnIndex ) const;
+         uint8_t getUInt8( const std::string& columnLabel ) const;
+
+         uint16_t getUInt16( uint32_t columnIndex ) const;
+         uint16_t getUInt16( const std::string& columnLabel ) const;
+
+         int64_t getInt64( uint32_t columnIndex ) const;
+         int64_t getInt64( const std::string& columnLabel ) const;
+
+         uint64_t getUInt64( uint32_t columnIndex ) const;
+         uint64_t getUInt64( const std::string& columnLabel ) const;
 
          size_t getRow() const;
 
-         const Statement * getStatement() const;
+         const Statement* getStatement() const;
 
-         std::string getString(uint32_t columnIndex) const;
-         std::string getString(const std::string& columnLabel) const;
+         std::string getString( uint32_t columnIndex ) const;
+         std::string getString( const std::string& columnLabel ) const;
 
          void getWarnings();
 
@@ -93,9 +107,9 @@ namespace Mysql
 
          bool isLast() const;
 
-         bool isNull(uint32_t columnIndex) const;
+         bool isNull( uint32_t columnIndex ) const;
 
-         bool isNull(const std::string& columnLabel) const;
+         bool isNull( const std::string& columnLabel ) const;
 
          bool next();
 
@@ -103,7 +117,5 @@ namespace Mysql
 
       };
 }
-
-
 
 #endif //SAPPHIRE_PREPAREDRESULTSET_H
