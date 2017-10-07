@@ -3,16 +3,17 @@
 
 #include <stdint.h>
 #include <string>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace Mysql
 {
    class Connection;
    class ResultSet;
 
-   class Statement
+   class Statement : public boost::enable_shared_from_this< Statement >
    {
    protected:
-      Connection * m_pConnection;
+      boost::shared_ptr< Connection > m_pConnection;
 
       void doQuery( const std::string& q );
 
@@ -21,17 +22,17 @@ namespace Mysql
       unsigned int m_warningsCount;
 
    public:
-      Statement( Connection* conn );
+      Statement( boost::shared_ptr< Connection > conn );
 
       virtual ~Statement() {};
 
-      virtual Connection * getConnection();
+      virtual boost::shared_ptr< Connection > getConnection();
 
       virtual bool execute( const std::string& sql );
 
-      virtual ResultSet * executeQuery( const std::string& sql );
+      virtual boost::shared_ptr< ResultSet > executeQuery( const std::string& sql );
 
-      virtual ResultSet * getResultSet();
+      virtual boost::shared_ptr< ResultSet > getResultSet();
 
       virtual uint64_t getUpdateCount();
 

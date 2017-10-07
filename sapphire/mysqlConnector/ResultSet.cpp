@@ -8,7 +8,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <string.h>
 
-Mysql::ResultSet::ResultSet( MYSQL_RES* res, Mysql::Statement* par )
+Mysql::ResultSet::ResultSet( MYSQL_RES* res, boost::shared_ptr< Mysql::Statement > par )
 {
    if( !res )
       return;
@@ -94,7 +94,7 @@ size_t Mysql::ResultSet::rowsCount() const
    return static_cast< uint32_t >( m_numRows );
 }
 
-const Mysql::Statement* Mysql::ResultSet::getStatement() const
+const boost::shared_ptr< Mysql::Statement > Mysql::ResultSet::getStatement() const
 {
    return m_pStmt;
 }

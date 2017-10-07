@@ -309,7 +309,7 @@ public:
 
 }
 
-Mysql::PreparedStatement::PreparedStatement( MYSQL_STMT* pStmt, Mysql::Connection* pConn )
+Mysql::PreparedStatement::PreparedStatement( MYSQL_STMT* pStmt, boost::shared_ptr< Mysql::Connection > pConn )
         : Statement( pConn )
 {
    m_pStmt = pStmt;
@@ -324,7 +324,7 @@ uint32_t Mysql::PreparedStatement::errNo()
    return mysql_stmt_errno( m_pStmt );
 }
 
-Mysql::Connection* Mysql::PreparedStatement::getConnection()
+boost::shared_ptr< Mysql::Connection > Mysql::PreparedStatement::getConnection()
 {
    return m_pConnection;
 }
@@ -400,30 +400,30 @@ bool Mysql::PreparedStatement::execute( const std::string &sql )
    return false;
 }
 
-Mysql::ResultSet* Mysql::PreparedStatement::executeQuery( const std::string &sql )
+boost::shared_ptr< Mysql::ResultSet > Mysql::PreparedStatement::executeQuery( const std::string &sql )
 {
    // not to be implemented for prepared statements
    return nullptr;
 }
 
-Mysql::ResultSet* Mysql::PreparedStatement::executeQuery()
+boost::shared_ptr< Mysql::ResultSet > Mysql::PreparedStatement::executeQuery()
 {
    doQuery();
 
    my_bool bool_tmp = 1;
    mysql_stmt_attr_set( m_pStmt, STMT_ATTR_UPDATE_MAX_LENGTH, &bool_tmp );
 
-   ResultSet* tmp = new PreparedResultSet( m_pResultBind, this );
+   boost::shared_ptr< ResultSet > tmp( new PreparedResultSet( m_pResultBind, boost::static_pointer_cast< PreparedStatement >( shared_from_this() ) ) );
 
    return tmp;
 }
 
-Mysql::ResultSet* Mysql::PreparedStatement::getResultSet()
+boost::shared_ptr< Mysql::ResultSet > Mysql::PreparedStatement::getResultSet()
 {
    my_bool bool_tmp = 1;
    mysql_stmt_attr_set( m_pStmt, STMT_ATTR_UPDATE_MAX_LENGTH, &bool_tmp );
 
-   ResultSet* tmp = new PreparedResultSet( m_pResultBind, this );
+   boost::shared_ptr< ResultSet > tmp( new PreparedResultSet( m_pResultBind, boost::static_pointer_cast< PreparedStatement >( shared_from_this() ) ) );
 
    return tmp;
 }
@@ -435,7 +435,7 @@ MYSQL_STMT* Mysql::PreparedStatement::getRawStmt()
 
 typedef std::pair< char*, size_t > BufferSizePair;
 
-static BufferSizePair allocate_buffer_for_type(enum_field_types t)
+static BufferSizePair allocate_buffer_for_type( enum_field_types t )
 {
    switch( t )
    {

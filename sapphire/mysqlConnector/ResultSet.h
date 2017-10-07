@@ -29,7 +29,7 @@ namespace Mysql
 
          mutable uint32_t m_lastQueriedColumn;
 
-         Statement* m_pStmt;
+         boost::shared_ptr< Statement > m_pStmt;
 
          MYSQL_RES* m_pRes;
 
@@ -37,7 +37,7 @@ namespace Mysql
          MYSQL_FIELD* getFieldMeta( unsigned int columnIndex ) const;
 
       public:
-         ResultSet( MYSQL_RES* res, Statement* par );
+         ResultSet( MYSQL_RES* res, boost::shared_ptr< Statement > par );
 
          virtual ~ResultSet();
 
@@ -71,7 +71,7 @@ namespace Mysql
 
          virtual size_t getRow() const;
 
-         virtual const Statement * getStatement() const;
+         virtual const boost::shared_ptr< Statement > getStatement() const;
 
          virtual std::string getString( uint32_t columnIndex ) const;
          virtual std::string getString( const std::string& columnLabel ) const;

@@ -3,6 +3,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include "Statement.h"
 #include <mysql.h>
 
@@ -16,7 +17,7 @@ namespace Mysql
       {
       protected:
          MYSQL_STMT * m_pStmt;
-         Connection * m_pConnection;
+         boost::shared_ptr< Connection > m_pConnection;
          boost::scoped_ptr< ParamBind > m_pParamBind;
          uint32_t m_paramCount;
 
@@ -33,10 +34,10 @@ namespace Mysql
          bool sendLongDataBeforeParamBind();
 
       public:
-         PreparedStatement( MYSQL_STMT* pStmt, Connection* pConn );
+         PreparedStatement( MYSQL_STMT* pStmt, boost::shared_ptr< Connection > pConn );
          virtual ~PreparedStatement();
 
-         Connection* getConnection() override;
+         boost::shared_ptr< Connection > getConnection() override;
          MYSQL_STMT* getRawStmt();
 
          uint32_t errNo() override;
@@ -50,12 +51,12 @@ namespace Mysql
          bool execute();
          bool execute( const std::string& sql );
 
-         ResultSet* executeQuery();
-         ResultSet* executeQuery( const std::string& sql );
+         boost::shared_ptr< ResultSet > executeQuery();
+         boost::shared_ptr< ResultSet > executeQuery( const std::string& sql );
 
          bool getMoreResults();
 
-         ResultSet* getResultSet();
+         boost::shared_ptr< ResultSet > getResultSet();
 
          void setBlob( uint32_t parameterIndex, std::istream * blob );
 

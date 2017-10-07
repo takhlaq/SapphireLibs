@@ -43,7 +43,7 @@ uint32_t Mysql::PreparedResultSet::findColumn( const std::string &columnLabel ) 
 }
 
 Mysql::PreparedResultSet::PreparedResultSet( boost::shared_ptr< ResultBind >& pBind,
-                                             Mysql::PreparedStatement* par ) :
+                                             boost::shared_ptr< Mysql::PreparedStatement > par ) :
    ResultSet( nullptr, par ),
    m_pResultBind( pBind ),
    m_pStmt( par )
@@ -592,7 +592,7 @@ size_t Mysql::PreparedResultSet::rowsCount() const
    return static_cast< uint32_t >( m_numRows );
 }
 
-const Mysql::Statement* Mysql::PreparedResultSet::getStatement() const
+const boost::shared_ptr< Mysql::Statement > Mysql::PreparedResultSet::getStatement() const
 {
    return m_pStmt;
 }

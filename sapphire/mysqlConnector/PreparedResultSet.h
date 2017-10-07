@@ -23,7 +23,7 @@ namespace Mysql
 
          FieldNameIndexMap m_fieldNameToIndex;
 
-         PreparedStatement * m_pStmt;
+         boost::shared_ptr< PreparedStatement > m_pStmt;
 
          bool is_valid;
 
@@ -39,7 +39,7 @@ namespace Mysql
          uint64_t getUInt64_intern( const uint32_t columnIndex, bool cutTooBig ) const;
 
       public:
-         PreparedResultSet( boost::shared_ptr< ResultBind >& pBind, PreparedStatement* par );
+         PreparedResultSet( boost::shared_ptr< ResultBind >& pBind, boost::shared_ptr< PreparedStatement > par );
 
          ~PreparedResultSet() override;
 
@@ -92,7 +92,7 @@ namespace Mysql
 
          size_t getRow() const;
 
-         const Statement* getStatement() const;
+         const boost::shared_ptr< Statement > getStatement() const;
 
          std::string getString( uint32_t columnIndex ) const;
          std::string getString( const std::string& columnLabel ) const;

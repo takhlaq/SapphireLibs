@@ -2,6 +2,7 @@
 #define SAPPHIRE_MYSQLBASE_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <mysql.h>
 #include <string>
 #include <map>
@@ -13,15 +14,17 @@ typedef std::map< enum mysql_option, std::string > optionMap;
 
 class Connection;
 
-class MySqlBase
+class MySqlBase : public boost::enable_shared_from_this< MySqlBase >
 {
 public:
    MySqlBase();
 
    ~MySqlBase();
 
-   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password, uint16_t port );
-   Connection * connect( const std::string& hostName, const std::string& userName, const std::string& password, const optionMap& map, uint16_t port );
+   boost::shared_ptr< Connection > connect( const std::string& hostName, const std::string& userName,
+                                            const std::string& password, uint16_t port );
+   boost::shared_ptr< Connection > connect( const std::string& hostName, const std::string& userName,
+                                            const std::string& password, const optionMap& map, uint16_t port );
 
    std::string getVersionInfo();
 
