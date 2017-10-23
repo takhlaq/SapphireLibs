@@ -8,6 +8,9 @@ if(UNIX)
   
 else()
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../external/MySQL/")
+
+  # ignore unchecked iterators warnings from msvc
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
 message(status "** CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
