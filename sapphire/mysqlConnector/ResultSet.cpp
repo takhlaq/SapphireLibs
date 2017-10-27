@@ -155,6 +155,26 @@ uint64_t Mysql::ResultSet::getUInt64( const std::string &columnLabel ) const
    return getUInt64( findColumn( columnLabel ) );
 }
 
+uint16_t Mysql::ResultSet::getUInt16( uint32_t columnIndex ) const
+{
+   return static_cast< uint16_t >( getInt( columnIndex ) );
+}
+
+uint16_t Mysql::ResultSet::getUInt16( const std::string &columnLabel ) const
+{
+   return getUInt16( findColumn( columnLabel ) );
+}
+
+int16_t Mysql::ResultSet::getInt16( uint32_t columnIndex ) const
+{
+   return static_cast< int16_t >( getInt( columnIndex ) );
+}
+
+int16_t Mysql::ResultSet::getInt16( const std::string &columnLabel ) const
+{
+   return getUInt16( findColumn( columnLabel ) );
+}
+
 int32_t Mysql::ResultSet::getInt( uint32_t columnIndex ) const
 {
    if( columnIndex == 0 || columnIndex > m_numFields )
@@ -206,6 +226,16 @@ long double Mysql::ResultSet::getDouble( uint32_t columnIndex ) const
 long double Mysql::ResultSet::getDouble( const std::string &columnLabel ) const
 {
    return getDouble( findColumn( columnLabel ) );
+}
+
+float Mysql::ResultSet::getFloat( uint32_t columnIndex ) const
+{
+   return static_cast< float >( getDouble( columnIndex ) );
+}
+
+float Mysql::ResultSet::getFloat( const std::string &columnLabel ) const
+{
+   return getFloat( findColumn( columnLabel ) );
 }
 
 bool Mysql::ResultSet::getBoolean( uint32_t columnIndex ) const

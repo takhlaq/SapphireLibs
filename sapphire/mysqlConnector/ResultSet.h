@@ -55,12 +55,21 @@ namespace Mysql
          virtual long double getDouble( uint32_t columnIndex ) const;
          virtual long double getDouble( const std::string& columnLabel ) const;
 
+         virtual float getFloat( uint32_t columnIndex ) const;
+         virtual float getFloat( const std::string& columnLabel ) const;
+
          virtual int32_t getInt( uint32_t columnIndex ) const;
          virtual int32_t getInt( const std::string& columnLabel ) const;
-
+         
          virtual uint32_t getUInt( uint32_t columnIndex ) const;
          virtual uint32_t getUInt( const std::string& columnLabel ) const;
 
+         virtual int16_t getInt16( uint32_t columnIndex ) const;
+         virtual int16_t getInt16( const std::string& columnLabel ) const;
+         
+         virtual uint16_t getUInt16( uint32_t columnIndex ) const;
+         virtual uint16_t getUInt16( const std::string& columnLabel ) const;
+         
          virtual int64_t getInt64( uint32_t columnIndex ) const;
          virtual int64_t getInt64( const std::string& columnLabel ) const;
 
