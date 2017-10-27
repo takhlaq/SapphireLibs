@@ -49,18 +49,15 @@ namespace Mysql
             case MYSQL_TYPE_TIME:
             case MYSQL_TYPE_DATETIME:
                return st_buffer_size_type( new char[sizeof( MYSQL_TIME )], sizeof( MYSQL_TIME ), field->type );
-
-
             case MYSQL_TYPE_TINY_BLOB:
-            case MYSQL_TYPE_MEDIUM_BLOB:
+               return st_buffer_size_type( new char[256], 256, field->type );
             case MYSQL_TYPE_LONG_BLOB:
+               return st_buffer_size_type( new char[16777215], 16777215, field->type );
+            case MYSQL_TYPE_MEDIUM_BLOB:
             case MYSQL_TYPE_BLOB:
-            case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VAR_STRING:
-#if LIBMYSQL_VERSION_ID > 50700
-               case MYSQL_TYPE_JSON:
-      return st_buffer_size_type(new char[field->max_length + 1], field->max_length + 1, field->type);
-#endif //LIBMYSQL_VERSION_ID > 50700
+            case MYSQL_TYPE_STRING:
+               return st_buffer_size_type( new char[65535], 65535, field->type );
 
             case MYSQL_TYPE_DECIMAL:
             case MYSQL_TYPE_NEWDECIMAL:
