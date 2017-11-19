@@ -16,7 +16,7 @@ namespace exd
 class Exh;
 
 // Field type containing all the possible types in the data files
-typedef boost::variant<
+using Field = boost::variant<
     std::string,
     bool,
     int8_t,
@@ -26,7 +26,7 @@ typedef boost::variant<
     int32_t,
     uint32_t,
     float,
-    uint64_t> Field;
+    uint64_t >;
 
 // Data for a given language
 class Exd

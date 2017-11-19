@@ -31,8 +31,8 @@ public:
     };
 
     // HashTable has dir hashes -> filename hashes -> HashTableEntry
-    typedef std::unordered_map<uint32_t, HashTableEntry> DirHashTable;
-    typedef std::unordered_map<uint32_t, DirHashTable> HashTable;
+    using DirHashTable = std::unordered_map< uint32_t, HashTableEntry >;
+    using HashTable = std::unordered_map< uint32_t, DirHashTable >;
 
     // Get the number of dat files the index is linked to
     uint32_t get_dat_count() const;

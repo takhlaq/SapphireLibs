@@ -23,7 +23,7 @@ namespace Mysql
          }
       };
 
-      typedef std::pair< char*, size_t > BufferSizePair;
+      using BufferSizePair = std::pair< char*, size_t >;
       static struct st_buffer_size_type
       allocate_buffer_for_field( const MYSQL_FIELD * const field )
       {

@@ -35,7 +35,7 @@ long double Mysql::Util::strtold(const char *nptr, char **endptr)
 
 long double Mysql::Util::strtonum( const std::string &str, int radix )
 {
-   typedef std::istreambuf_iterator< char > iter_t;
+   using iter_t = std::istreambuf_iterator< char >;
    static std::locale c_locale( "C" );
    static const std::num_get< char > &cvt = std::use_facet< std::num_get< char > >( c_locale );
 

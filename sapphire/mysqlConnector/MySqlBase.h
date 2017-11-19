@@ -10,7 +10,7 @@
 namespace Mysql
 {
 
-typedef std::map< enum mysql_option, std::string > optionMap;
+using optionMap = std::map< enum mysql_option, std::string >;
 
 class Connection;
 

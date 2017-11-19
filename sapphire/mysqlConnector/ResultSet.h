@@ -21,7 +21,7 @@ namespace Mysql
          uint64_t m_numRows;
          uint64_t m_rowPosition;
 
-         typedef std::map< std::string, uint32_t > FieldNameIndexMap;
+         using FieldNameIndexMap = std::map< std::string, uint32_t >;
 
          FieldNameIndexMap	m_fieldNameToIndex;
 

@@ -40,10 +40,10 @@ namespace conv
 	void bin2base64(const std::vector<char>& i_data, std::ostream& o_stream)
 	{
 		using namespace boost::archive::iterators;
-		typedef
+		using base64_text =
 			base64_from_binary <    // convert binary values ot base64 characters
 				transform_width <   // retrieve 6 bit integers from a sequence of 8 bit bytes
-					const char *, 6, 8>> base64_text; // compose all the above operations in to a new iterator
+					const char *, 6, 8 > >; // compose all the above operations in to a new iterator
 
 		std::copy(
 			base64_text(i_data.data()),

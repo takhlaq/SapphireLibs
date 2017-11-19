@@ -8,5 +8,5 @@
 
 namespace Mysql
 {
-   typedef boost::scoped_ptr< Mysql::PreparedResultSet > PreparedResultSetScopedPtr;
+   using PreparedResultSetScopedPtr = boost::scoped_ptr< Mysql::PreparedResultSet >;
 }
