@@ -28,11 +28,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 #include <mysql.h>
+#include <cstdlib>
 
 #ifndef UL64
 #ifdef _WIN32
+#ifdef MSVC
 #define UL64(x) x##ui64
 #else
+#define UL64(x) x##ULL
+#endif
 #define UL64(x) x##ULL
 #endif
 #endif
@@ -46,24 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #define NULLCSTR static_cast<char *>(0)
-
-#ifndef _WIN32
-#  ifndef HAVE_FUNCTION_STRTOLL
-#    define strtoll(__a, __b, __c)  static_cast<long long>(Util::strtold((__a), NULL))
-#    define HAVE_FUNCTION_STRTOLL 1
-#  endif
-#  ifndef HAVE_FUNCTION_STRTOULL
-#    define strtoull(__a, __b, __c)  static_cast<unsigned long long>(Util::strtold((__a), NULL))
-#    define HAVE_FUNCTION_STRTOULL 1
-#  endif
-#else
-# ifndef strtoll
-#  define strtoll(x, e, b) _strtoi64((x), (e), (b))
-# endif
-# ifndef strtoull
-#  define strtoull(x, e, b) _strtoui64((x), (e), (b))
-# endif
-#endif	//	_WIN32
 
 
 #define bit_uint1korr(A)	(*(((uint8_t*)(A))))

@@ -6,6 +6,7 @@
 #include <clocale>
 #include <string.h>
 #include <mysql.h>
+#include <cstring>
 
 namespace
 {

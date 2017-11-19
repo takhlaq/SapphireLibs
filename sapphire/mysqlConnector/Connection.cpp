@@ -2,10 +2,14 @@
 #include "MySqlBase.h"
 #include "Statement.h"
 #include "PreparedStatement.h"
+#include "ResultSet.h"
 
+#include <string>
 #include <vector>
 #include <boost/scoped_array.hpp>
 #include <boost/make_shared.hpp>
+#include <algorithm>
+#include <chrono>
 
 Mysql::Connection::Connection( boost::shared_ptr< MySqlBase > pBase,
                                const std::string& hostName, 
@@ -20,7 +24,7 @@ Mysql::Connection::Connection( boost::shared_ptr< MySqlBase > pBase,
                           nullptr, port, nullptr, 0) == nullptr )
       throw std::runtime_error( mysql_error( m_pRawCon ) );
    m_bConnected = true;
-
+   m_pingThread = std::thread([this]() { pingLoop(); });
 }
 
 Mysql::Connection::Connection( boost::shared_ptr< MySqlBase > pBase,
@@ -106,12 +110,14 @@ Mysql::Connection::Connection( boost::shared_ptr< MySqlBase > pBase,
    if( mysql_real_connect( m_pRawCon, hostName.c_str(), userName.c_str(), password.c_str(),
                            nullptr, port, nullptr, 0) == nullptr )
       throw std::runtime_error( mysql_error( m_pRawCon ) );
-
+   m_bConnected = true;
+   m_pingThread = std::thread( [this](){ pingLoop(); } );
 }
 
 
 Mysql::Connection::~Connection()
 {
+   close();
 }
 
 void Mysql::Connection::setOption( enum mysql_option option, const void *arg )
@@ -140,8 +146,14 @@ void Mysql::Connection::setOption( enum mysql_option option, const std::string& 
 
 void Mysql::Connection::close()
 {
-   mysql_close( m_pRawCon );
+   std::lock_guard< std::mutex > lock( m_connMutex );
+   if( m_pRawCon )
+      mysql_close( m_pRawCon );
+
    m_bConnected = false;
+
+   if( m_pingThread.joinable() )
+      m_pingThread.join();
 }
 
 bool Mysql::Connection::isClosed() const
@@ -174,7 +186,7 @@ bool Mysql::Connection::getAutoCommit()
    auto row = mysql_fetch_row( pRes );
 
    uint32_t ac = atoi( row[0] );
-
+   mysql_free_result( pRes );
    return ac != 0;
 }
 
@@ -220,6 +232,47 @@ boost::shared_ptr< Mysql::Statement > Mysql::Connection::createStatement()
 MYSQL* Mysql::Connection::getRawCon()
 {
    return m_pRawCon;
+}
+
+void Mysql::Connection::pingLoop()
+{
+   // todo: this sleep is so dumb, initialise the loop somewhere outside the constructor
+   std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+   std::chrono::seconds timeout;
+   {
+      std::lock_guard< std::mutex > lock( m_connMutex );
+
+      if( isClosed() )
+         throw std::runtime_error( "Mysql: No connection to retrieve wait_timeout!" );
+
+      std::string query( "SHOW VARIABLES LIKE 'wait_timeout';" );
+      auto res = mysql_real_query( m_pRawCon, query.c_str(), query.length() );
+
+      if( res != 0 )
+         throw std::runtime_error("Mysql::pingLoop wait_timeout query failed!");
+
+      auto pRes = mysql_store_result( m_pRawCon );
+      auto row = mysql_fetch_row( pRes );
+
+      // todo: probably use a config value for ping timeout and use that instead of hardcoded 30sec leeway
+      int seconds = atoi( row[1] );
+      seconds = seconds - 30 < 1 ? 30 : seconds - 30;
+
+      timeout = std::chrono::seconds( seconds );
+      mysql_free_result( pRes );
+   }
+
+   while( true )
+   {
+      {
+         std::lock_guard< std::mutex > lock( m_connMutex );
+         if ( isClosed() )
+            break;
+
+         ping();
+      }
+      std::this_thread::sleep_for( timeout );
+   }
 }
 
 std::string Mysql::Connection::getError()

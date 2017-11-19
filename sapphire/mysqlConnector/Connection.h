@@ -6,7 +6,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <mysql.h>
 #include <map>
-
+#include <thread>
+#include <mutex>
 
 namespace Mysql
 {
@@ -79,9 +80,11 @@ namespace Mysql
       boost::shared_ptr< MySqlBase > m_pBase;
       MYSQL* m_pRawCon;
       bool m_bConnected;
-
+      std::thread m_pingThread;
+      std::mutex m_connMutex;
       Connection( const Connection& );
       void operator=( Connection& );
+      void pingLoop();
    };
 
 

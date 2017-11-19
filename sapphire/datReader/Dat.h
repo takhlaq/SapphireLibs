@@ -3,8 +3,10 @@
 
 #include "SqPack.h"
 
-#include <mutex>
 
+#include <shared_mutex>
+#include <mutex>
+#include <memory>
 #include <boost/filesystem.hpp>
 
 namespace xiv
