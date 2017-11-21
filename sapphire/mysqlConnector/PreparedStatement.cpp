@@ -371,7 +371,7 @@ void Mysql::PreparedStatement::doQuery()
       throw std::runtime_error("Couldn't bind : " + std::to_string( errNo() ) );
 
    if( !sendLongDataBeforeParamBind() || mysql_stmt_execute( m_pStmt ) )
-      throw std::runtime_error( "Couldn't execute : " + std::to_string( errNo() ) + ": " + m_pConnection->getError() );
+      throw std::runtime_error( "Couldn't execute : " + std::to_string( errNo() ) + ": " + std::string( mysql_stmt_error( m_pStmt ) ) );
 
    warningsCount = getWarningCount();
 }
