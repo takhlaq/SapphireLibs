@@ -36,7 +36,7 @@ namespace Mysql
       void close();
       bool isClosed() const;
 
-      void ping();
+      bool ping();
       
       void setOption( enum mysql_option option, const void* arg );
       void setOption( enum mysql_option option, uint32_t arg );

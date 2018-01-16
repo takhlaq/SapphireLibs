@@ -316,8 +316,8 @@ std::vector< char > Mysql::ResultSet::getBlobVector( uint32_t columnIndex ) cons
    inStr->read( buff, sizeof( buff ) );
    if( inStr->gcount() )
    {
-      data.resize( inStr->gcount() );
-      memcpy( data.data(), buff, inStr->gcount() );
+      data.resize( static_cast< const uint32_t >( inStr->gcount() ) );
+      memcpy(data.data(), buff, static_cast< size_t >( inStr->gcount() ) );
    }
    return data;
 }
