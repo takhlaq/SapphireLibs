@@ -30,24 +30,8 @@
 #include <atomic>
 #include <mutex>
 
-#ifdef CINDER_CINDER
-#include "cinder/Filesystem.h"
-    #if CINDER_VERSION < 900
-        #include "cinder/app/AppNative.h"
-    #else
-        #include "cinder/app/App.h"
-    #endif
-#else
-#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
-#include <filesystem>
-namespace ci { namespace fs = std::tr2::sys; }
-#else
-#define BOOST_FILESYSTEM_VERSION 3
-        #define BOOST_FILESYSTEM_NO_DEPRECATED
-        #include <boost/filesystem.hpp>
-        namespace ci { namespace fs = boost::filesystem; }
-#endif
-#endif
+#include <boost/filesystem.hpp>
+namespace ci { namespace fs = boost::filesystem; }
 
 // Windows Issue :
 // For the moment the overloaded version of wd::watch has a different name on windows
