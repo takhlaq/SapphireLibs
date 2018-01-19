@@ -30,8 +30,8 @@
 #include <atomic>
 #include <mutex>
 
-#include <boost/filesystem.hpp>
-namespace ci { namespace fs = boost::filesystem; }
+#include <experimental/filesystem>
+namespace ci { namespace fs = std::experimental::filesystem; }
 
 // Windows Issue :
 // For the moment the overloaded version of wd::watch has a different name on windows
