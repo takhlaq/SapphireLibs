@@ -33,7 +33,7 @@ namespace xiv
 
          // creates the header .exh
          {
-            auto header_file = i_game_data.get_file("exd/" + i_name + ".exh");
+            auto header_file = i_game_data.getFile("exd/" + i_name + ".exh");
             _header = std::shared_ptr<Exh>(new Exh(*header_file));
          }
 
@@ -46,7 +46,7 @@ namespace xiv
                std::vector<std::shared_ptr<dat::File>> files;
                for(auto& exd_def: _header->get_exd_defs())
                {
-                  files.emplace_back( i_game_data.get_file("exd/" + i_name + "_" + std::to_string(exd_def.start_id) + language_map.at(language) + ".exd") );
+                  files.emplace_back( i_game_data.getFile("exd/" + i_name + "_" + std::to_string(exd_def.start_id) + language_map.at(language) + ".exd") );
                }
                // Instantiate the data for this language
                _data[language] = std::unique_ptr<Exd>(new Exd(_header, files));

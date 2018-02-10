@@ -18,7 +18,7 @@ ExdData::ExdData(dat::GameData& i_game_data) try :
     //XIV_INFO(xiv_exd_logger, "Initializing ExdData");
 
     // Fetch the root.exl and get a stream from it
-    auto root_exl = i_game_data.get_file("exd/root.exl");
+    auto root_exl = i_game_data.getFile("exd/root.exl");
     auto stream_ptr = utils::stream::get_istream(root_exl->get_data_sections().front());
     auto& stream = *stream_ptr;
 

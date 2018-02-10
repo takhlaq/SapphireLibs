@@ -59,6 +59,9 @@ namespace xiv
       Index::Index( const boost::filesystem::path& i_path ) :
          SqPack( i_path )
       {
+         if( !_handle )
+            throw new std::runtime_error( "Failed to load Index at " + i_path.string() );
+
          // Hash Table record
          auto hash_table_block_record = extract<IndexBlockRecord>( _handle );
          is_index_block_valid( hash_table_block_record );

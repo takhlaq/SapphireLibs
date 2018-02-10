@@ -19,38 +19,46 @@ class File;
 class Cat
 {
 public:
-    // i_base_path: Path to the folder containingthe datfiles
-    // i_cat_nb: The number of the category
-    // i_name: The name of the category, empty if not known
-    Cat(const boost::filesystem::path& i_base_path, uint32_t i_cat_nb, const std::string& i_name);
-    ~Cat();
+   // basePath: Path to the folder containingthe datfiles
+   // catNum: The number of the category
+   // name: The name of the category, empty if not known
+   Cat( const boost::filesystem::path& basePath, uint32_t catNum, const std::string& name );
 
-    // Returns .index of the category
-    const Index& get_index() const;
+   // basePath: Path to the folder containingthe datfiles
+   // catNum: The number of the category
+   // name: The name of the category, empty if not known
+   // exNum: The number of the expansion to load from
+   // chunk: The chunk to load from
+   Cat( const boost::filesystem::path& basePath, uint32_t catNum, const std::string& name, uint32_t exNum, uint32_t chunk );
+   ~Cat();
 
-    // Retrieve a file from the category given its hashes
-    std::unique_ptr<File> get_file(uint32_t dir_hash, uint32_t filename_hash) const;
+   // Returns .index of the category
+   const Index& getIndex() const;
+
+   // Retrieve a file from the category given its hashes
+   std::unique_ptr<File> getFile( uint32_t dir_hash, uint32_t filename_hash ) const;
 
 
-    bool check_file_existence(uint32_t dir_hash, uint32_t filename_hash) const;
-    bool check_dir_existence(uint32_t dir_hash) const;
+   bool doesFileExist( uint32_t dir_hash, uint32_t filename_hash ) const;
+   bool doesDirExist( uint32_t dir_hash ) const;
 
 
-    // Returns thename of the category
-    const std::string& get_name() const;
+   // Returns thename of the category
+   const std::string& getName() const;
 
-    // Returns the number of the category
-    uint32_t get_nb() const;
+   // Returns the number of the category
+   uint32_t getCatNum() const;
 
 protected:
-    const std::string _name;
-    const uint32_t _nb;
+   const std::string m_name;
+   const uint32_t m_catNum;
+   const uint32_t m_chunk;
 
-    // The .index
-    std::unique_ptr<Index> _index;
+   // The .index
+   std::unique_ptr<Index> m_index;
 
-    // The .datXs such as dat nb X => _dats[X]
-    std::vector<std::unique_ptr<Dat>> _dats;
+   // The .datXs such as dat nb X => m_dats[X]
+   std::vector<std::unique_ptr<Dat>> m_dats;
 };
     
 }
