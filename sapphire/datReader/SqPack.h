@@ -41,25 +41,26 @@ namespace xiv {
 
 namespace xiv
 {
-   namespace dat
-   {
+namespace dat
+{
 
-      class SqPack
-      {
-      public:
-         // Full path to the sqpack file
-         SqPack( const boost::filesystem::path& i_path );
-         virtual ~SqPack();
+class SqPack
+{
 
-      protected:
-         // Checks that a given block is valid iven its hash
-         void is_block_valid( uint32_t i_offset, uint32_t i_size, const SqPackBlockHash& i_block_hash );
+public:
+   // Full path to the sqpack file
+   SqPack( const boost::filesystem::path& i_path );
+   virtual ~SqPack();
 
-         // File handle
-         std::ifstream _handle;
-      };
+protected:
+   // Checks that a given block is valid iven its hash
+   void isBlockValid( uint32_t i_offset, uint32_t i_size, const SqPackBlockHash& i_block_hash );
 
-   }
+   // File handle
+   std::ifstream m_handle;
+   };
+
+}
 }
 
 #endif // XIV_DAT_SQPACK_H

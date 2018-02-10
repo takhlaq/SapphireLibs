@@ -21,7 +21,7 @@ class GameData
 {
 public:
    // This should be the path in which the .index/.datX files are located
-   GameData( const boost::filesystem::path& i_path );
+   GameData( const boost::filesystem::path& path );
    ~GameData();
 
    static const std::string buildDatStr( const std::string folder, const int cat, const int exNum, const int chunk, const std::string platform, const std::string type );
@@ -36,9 +36,7 @@ public:
 
    const uint32_t GameData::getExChunkAmount( uint32_t catNum, uint32_t exNum );
 
-   const Cat& getExCategory( uint32_t catNum, uint32_t exNum, uint32_t chunk );
-
-   const Cat& getExCategory( const std::string& catName, uint32_t exNum, uint32_t chunk );
+   const Cat& getExCategory( const std::string& catName, uint32_t exNum, const std::string& path );
 
    // Retrieve a file from the dats given its filename
    std::unique_ptr<File> getFile( const std::string& path );
@@ -56,7 +54,7 @@ protected:
    // Return a specific category given a path (calls const Cat& getCategory(const std::string& catName))
    const Cat& getCategoryFromPath( const std::string& path );
 
-   // From a full path, returns the dir_hash and the filename_hash
+   // From a full path, returns the dirHash and the filenameHash
    void getHashes( const std::string& path, uint32_t& dirHash, uint32_t& filenameHash ) const;
 
    // Lazy instantiation of category
@@ -73,8 +71,8 @@ protected:
    // List of all the categories numbers, is equal to m_cats.keys()
    std::vector<uint32_t> m_catNums;
 
-   // List of all EX categories and their chunks, "Cat - (ExNum - Chunks)"
-   std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::vector<std::unique_ptr<Cat>>>> m_exCats;
+   // Map of all EX categories and their chunks, "CatNum - (ExNum - (ChunkNum - Cat))"
+   std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unique_ptr<Cat>>>> m_exCats;
 
    // Mutexes needed to not instantiate the categories at the same time in two different threads, indexed by category number
    std::unordered_map<uint32_t, std::unique_ptr<std::mutex>> m_catCreationMutexes;

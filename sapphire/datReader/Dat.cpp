@@ -94,9 +94,9 @@ namespace xiv
          SqPack( i_path ),
          _nb( i_nb )
       {
-         auto block_record = extract<DatBlockRecord>( _handle );
+         auto block_record = extract<DatBlockRecord>( m_handle );
          block_record.offset *= 0x80;
-         is_block_valid( block_record.offset, block_record.size, block_record.block_hash );
+         isBlockValid( block_record.offset, block_record.size, block_record.block_hash );
       }
 
       Dat::~Dat()
@@ -111,8 +111,8 @@ namespace xiv
             std::lock_guard<std::mutex> lock( _file_mutex );
 
             // Seek to the start of the header of the file record and extract it
-            _handle.seekg( i_offset );
-            auto file_header = extract<DatFileHeader>( _handle );
+            m_handle.seekg( i_offset );
+            auto file_header = extract<DatFileHeader>( m_handle );
 
             switch( file_header.entry_type )
             {
@@ -124,11 +124,11 @@ namespace xiv
             {
                output_file->_type = FileType::standard;
 
-               uint32_t number_of_blocks = extract<uint32_t>( _handle, "number_of_blocks" );
+               uint32_t number_of_blocks = extract<uint32_t>( m_handle, "number_of_blocks" );
 
                // Just extract offset infos for the blocks to extract
                std::vector<DatStdFileBlockInfos> std_file_block_infos;
-               extract<DatStdFileBlockInfos>( _handle, number_of_blocks, std_file_block_infos );
+               extract<DatStdFileBlockInfos>( m_handle, number_of_blocks, std_file_block_infos );
 
                // Pre allocate data vector for the whole file
                output_file->_data_sections.resize( 1 );
@@ -147,12 +147,12 @@ namespace xiv
             {
                output_file->_type = FileType::model;
 
-               DatMdlFileBlockInfos mdl_file_block_infos = extract<DatMdlFileBlockInfos>( _handle );
+               DatMdlFileBlockInfos mdl_file_block_infos = extract<DatMdlFileBlockInfos>( m_handle );
 
                // Getting the block number and read their sizes
                const uint32_t block_count = mdl_file_block_infos.block_ids[::model_section_count - 1] + mdl_file_block_infos.block_counts[::model_section_count - 1];
                std::vector<uint16_t> block_sizes;
-               extract<uint16_t>( _handle, "block_size", block_count, block_sizes );
+               extract<uint16_t>( m_handle, "block_size", block_count, block_sizes );
 
                // Preallocate sufficient space
                output_file->_data_sections.resize( ::model_section_count );
@@ -178,15 +178,15 @@ namespace xiv
                output_file->_type = FileType::texture;
 
                // Extracts mipmap entries and the block sizes
-               uint32_t sections_count = extract<uint32_t>( _handle, "sections_count" );
+               uint32_t sections_count = extract<uint32_t>( m_handle, "sections_count" );
 
                std::vector<DatTexFileBlockInfos> tex_file_block_infos;
-               extract<DatTexFileBlockInfos>( _handle, sections_count, tex_file_block_infos );
+               extract<DatTexFileBlockInfos>( m_handle, sections_count, tex_file_block_infos );
 
                // Extracting block sizes
                uint32_t block_count = tex_file_block_infos.back().block_id + tex_file_block_infos.back().block_count;
                std::vector<uint16_t> block_sizes;
-               extract<uint16_t>( _handle, "block_size", block_count, block_sizes );
+               extract<uint16_t>( m_handle, "block_size", block_count, block_sizes );
 
                output_file->_data_sections.resize( sections_count + 1 );
 
@@ -195,8 +195,8 @@ namespace xiv
                auto& header_section = output_file->_data_sections[0];
                header_section.resize( header_size );
 
-               _handle.seekg( i_offset + file_header.size );
-               _handle.read( header_section.data(), header_size );
+               m_handle.seekg( i_offset + file_header.size );
+               m_handle.read( header_section.data(), header_size );
 
                // Extracting other sections
                for( uint32_t i = 0; i < sections_count; ++i )
@@ -224,9 +224,9 @@ namespace xiv
 
       void Dat::extract_block( uint32_t i_offset, std::vector<char>& o_data )
       {
-         _handle.seekg( i_offset );
+         m_handle.seekg( i_offset );
 
-         DatBlockHeader block_header = extract<DatBlockHeader>( _handle );
+         DatBlockHeader block_header = extract<DatBlockHeader>( m_handle );
 
          // Resizing the vector to write directly into it
          const uint32_t data_size = o_data.size();
@@ -235,14 +235,14 @@ namespace xiv
          // 32000 in compressed_size means it is not compressed so take uncompressed_size
          if( block_header.compressed_size == 32000 )
          {
-            _handle.read( o_data.data() + data_size, block_header.uncompressed_size );
+            m_handle.read( o_data.data() + data_size, block_header.uncompressed_size );
          }
          else
          {
             // If it is compressed use zlib
             // Read the data to be decompressed
             std::vector<char> temp_buffer( block_header.compressed_size );
-            _handle.read( temp_buffer.data(), block_header.compressed_size );
+            m_handle.read( temp_buffer.data(), block_header.compressed_size );
 
             utils::zlib::no_header_decompress( reinterpret_cast< uint8_t* >( temp_buffer.data() ),
                temp_buffer.size(),

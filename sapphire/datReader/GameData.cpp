@@ -20,7 +20,7 @@ namespace
 {
     // Relation between category number and category name
     // These names are taken straight from the exe, it helps resolve dispatching when getting files by path
-    boost::bimap<std::string, uint32_t> category_map = boost::assign::list_of<boost::bimap<std::string, uint32_t>::relation>
+    boost::bimap<std::string, uint32_t> categoryMap = boost::assign::list_of<boost::bimap<std::string, uint32_t>::relation>
         ("common",          0x00)
         ("bgcommon",        0x01)
         ("bg",              0x02)
@@ -41,13 +41,13 @@ namespace xiv
 namespace dat
 {
 
-GameData::GameData(const boost::filesystem::path& i_path) try :
-    m_path(i_path)
+GameData::GameData(const boost::filesystem::path& path) try :
+    m_path(path)
 {
    int maxExLevel = 0;
    
    // Determine which expansions are available
-   while( boost::filesystem::exists( boost::filesystem::path( m_path.string() + "\\..\\ex" + std::to_string( maxExLevel + 1) + "\\ex" + std::to_string( maxExLevel + 1) + ".ver" ) ) )
+   while( boost::filesystem::exists( boost::filesystem::path( m_path.string() + "\\ex" + std::to_string( maxExLevel + 1) + "\\ex" + std::to_string( maxExLevel + 1) + ".ver" ) ) )
    {
       maxExLevel++;
    }
@@ -55,7 +55,7 @@ GameData::GameData(const boost::filesystem::path& i_path) try :
    m_log.info( "[GameData] Detected Expansion Level: " + std::to_string( maxExLevel ) );
 
    // Iterate over the files in path
-   for( auto it = boost::filesystem::directory_iterator( m_path ); it != boost::filesystem::directory_iterator(); ++it )
+   for( auto it = boost::filesystem::directory_iterator( m_path.string() + "//ffxiv" ); it != boost::filesystem::directory_iterator(); ++it )
    {
       // Get the filename of the current element
       auto filename = it->path().filename().string();
@@ -80,30 +80,31 @@ GameData::GameData(const boost::filesystem::path& i_path) try :
          // Check for expansion
          for( int exNum = 1; exNum <= maxExLevel; exNum++ )
          {
-            const std::string path = m_path.string() + "\\..\\" + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, 0, "win32", "index" );
+            const std::string path = m_path.string() + "\\" + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, 0, "win32", "index" );
 
             if( boost::filesystem::exists( boost::filesystem::path( path ) ) )
             {
                m_log.info( "[GameData] -> Found cat for ex" + std::to_string( exNum ) );
 
                int chunkCount = 0;
-               
-               while( boost::filesystem::exists( m_path.string() + "\\..\\" + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkCount, "win32", "index" ) ) )
+
+               for(int chunkTest = 0; chunkTest < 256; chunkTest++ )
                {
-                  m_exCats[cat_nb][exNum].push_back( std::unique_ptr<Cat>() );
-                  m_log.info( "[GameData}  -> This chunk: " + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkCount, "win32", "index" ) );
-                  chunkCount++;
-               }
+                  if( boost::filesystem::exists( m_path.string() + "\\" + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkTest, "win32", "index" ) ) )
+                  {
+                     m_exCats[cat_nb][exNum][chunkTest] = std::unique_ptr<Cat>();
+                     m_log.info( "[GameData}  -> This chunk: " + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkTest, "win32", "index" ) );
+                     chunkCount++;
+                  }
+               }      
 
                m_log.info( "[GameData]  -> Found chunks: " + std::to_string( chunkCount ) );
-
-               //m_exCats[cat_nb] = 
             }
          }
       }
    }
 
-   m_log.info( "[GameData] GameData init at " + i_path.string() );
+   m_log.info( "[GameData] GameData init at " + path.string() );
 }
 catch( std::exception& e )
 {
@@ -182,8 +183,8 @@ const Cat& GameData::getCategory(uint32_t catNum)
 const Cat& GameData::getCategory(const std::string& catName)
 {
    // Find the category number from the name
-   auto category_map_it = ::category_map.left.find( catName );
-   if( category_map_it == ::category_map.left.end() )
+   auto category_map_it = ::categoryMap.left.find( catName );
+   if( category_map_it == ::categoryMap.left.end() )
    {
       throw std::runtime_error( "Category not found: " + catName );
    }
@@ -204,39 +205,31 @@ const uint32_t GameData::getExChunkAmount( uint32_t catNum, uint32_t exNum)
    return cat_it->second[exNum].size();
 }
 
-const Cat& GameData::getExCategory( uint32_t catNum, uint32_t exNum, uint32_t chunk )
-{
-   // Check that the category number exists
-   auto cat_it = m_exCats.find( catNum );
-   if( cat_it == m_exCats.end() )
-   {
-      throw std::runtime_error( "Category not found: " + std::to_string( catNum ) );
-   }
-
-   // If it exists and already instantiated return it
-   if( cat_it->second[exNum][chunk] )
-   {
-      return *( cat_it->second[exNum][chunk] );
-   }
-   else
-   {
-      // Else create it and return it
-      createExCategory( catNum );
-      return *( m_exCats[catNum][exNum][chunk] );
-   }
-}
-
-const Cat& GameData::getExCategory( const std::string& catName, uint32_t exNum, uint32_t chunk )
+const Cat& GameData::getExCategory( const std::string& catName, uint32_t exNum, const std::string& path )
 {
    // Find the category number from the name
-   auto category_map_it = ::category_map.left.find( catName );
-   if( category_map_it == ::category_map.left.end() )
+   auto category_map_it = ::categoryMap.left.find( catName );
+   if( category_map_it == ::categoryMap.left.end() )
    {
       throw std::runtime_error( "Category not found: " + catName );
    }
 
-   // From the category number return the category
-   return getExCategory( category_map_it->second, exNum, chunk );
+   uint32_t dir_hash;
+   uint32_t filename_hash;
+   getHashes( path, dir_hash, filename_hash );
+
+   for( auto const& chunk : m_exCats[category_map_it->second][exNum] )
+   {
+      if( !chunk.second )
+         createExCategory( category_map_it->second );
+
+      if( chunk.second->doesFileExist( dir_hash, filename_hash ) )
+      {
+         return *( chunk.second );
+      }
+   }
+
+   throw std::runtime_error( "Chunk not found for path: " + path );
 }
 
 const Cat& GameData::getCategoryFromPath(const std::string& path)
@@ -245,12 +238,12 @@ const Cat& GameData::getCategoryFromPath(const std::string& path)
    auto first_slash_pos = path.find( '/' );
    if( first_slash_pos == std::string::npos )
    {
-      throw std::runtime_error( "Path do not have a / char: " + path );
+      throw std::runtime_error( "Path does not have a / char: " + path );
    }
 
    if( path.substr( first_slash_pos + 1, 2) == "ex" )
    {
-      return getExCategory( path.substr( 0, first_slash_pos ), std::stoi( path.substr( first_slash_pos + 3, 1 ) ), 0 );
+      return getExCategory( path.substr( 0, first_slash_pos ), std::stoi( path.substr( first_slash_pos + 3, 1 ) ), path );
    }
    else
    {
@@ -270,7 +263,7 @@ void GameData::getHashes(const std::string& path, uint32_t& dirHash, uint32_t& f
    auto last_slash_pos = path_lower.rfind( '/' );
    if( last_slash_pos == std::string::npos )
    {
-      throw std::runtime_error( "Path do not have a / char: " + path );
+      throw std::runtime_error( "Path does not have a / char: " + path );
    }
 
    std::string dir_part = path_lower.substr( 0, last_slash_pos );
@@ -290,8 +283,8 @@ void GameData::createCategory(uint32_t catNum)
    {
       // Get the category name if we have it
       std::string cat_name;
-      auto category_map_it = ::category_map.right.find( catNum );
-      if( category_map_it != ::category_map.right.end() )
+      auto category_map_it = ::categoryMap.right.find( catNum );
+      if( category_map_it != ::categoryMap.right.end() )
       {
          cat_name = category_map_it->second;
       }
@@ -308,19 +301,19 @@ void GameData::createExCategory( uint32_t catNum )
    {
       // Get the category name if we have it
       std::string cat_name;
-      auto category_map_it = ::category_map.right.find( catNum );
-      if( category_map_it != ::category_map.right.end() )
+      auto category_map_it = ::categoryMap.right.find( catNum );
+      if( category_map_it != ::categoryMap.right.end() )
       {
          cat_name = category_map_it->second;
       }
 
       for( auto const& ex : m_exCats[catNum])
       {
-         m_log.info( "[GameData] Creating " + std::to_string( catNum ) + " DAT for ex" + std::to_string(ex.first) + " with " + std::to_string(getExChunkAmount( catNum, ex.first )) + " chunks" );
-         for( int i = 0; i < getExChunkAmount( catNum, ex.first ); i++ )
+         m_log.info( "[GameData] Creating " + std::to_string( catNum ) + " DAT for ex" + std::to_string( ex.first ) + " with " + std::to_string( getExChunkAmount( catNum, ex.first ) ) + " chunks" );
+         for( auto const& chunk : m_exCats[catNum][ex.first] )
          {
             // Actually creates the category
-            m_exCats[catNum][ex.first][i] = std::unique_ptr<Cat>( new Cat( m_path, catNum, cat_name, ex.first, i ) );
+            m_exCats[catNum][ex.first][chunk.first] = std::unique_ptr<Cat>( new Cat( m_path, catNum, cat_name, ex.first, chunk.first ) );
          }
       }
    }
