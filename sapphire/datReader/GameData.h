@@ -34,8 +34,6 @@ public:
    // Return a specific category by it's name (e.g.: "exd"/"game_script"/ etc...)
    const Cat& getCategory( const std::string& catName );
 
-   const uint32_t GameData::getExChunkAmount( uint32_t catNum, uint32_t exNum );
-
    const Cat& getExCategory( const std::string& catName, uint32_t exNum, const std::string& path );
 
    // Retrieve a file from the dats given its filename

@@ -59,7 +59,7 @@ std::unique_ptr<File> Cat::getFile(uint32_t dir_hash, uint32_t filename_hash) co
 {
     // Fetch the correct hash_table_entry for these hashes, from that request the file from the right dat file
     auto& hash_table_entry = getIndex().getHashTableEntry(dir_hash, filename_hash);
-    return m_dats[hash_table_entry.datNum]->get_file(hash_table_entry.datOffset);
+    return m_dats[hash_table_entry.datNum]->getFile(hash_table_entry.datOffset);
 }
 
 bool Cat::doesFileExist( uint32_t dir_hash, uint32_t filename_hash ) const
