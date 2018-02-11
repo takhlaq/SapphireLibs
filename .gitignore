@@ -91,4 +91,5 @@ src/libraries/external/boost_*
 *.ipdb
 *.iobj
 *.filters
+*.vcxproj
 

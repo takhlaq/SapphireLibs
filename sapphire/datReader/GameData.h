@@ -20,51 +20,60 @@ class File;
 class GameData
 {
 public:
-    // This should be the path in which the .index/.datX files are located
-    GameData(const boost::filesystem::path& i_path);
-    ~GameData();
+   // This should be the path in which the .index/.datX files are located
+   GameData( const boost::filesystem::path& path );
+   ~GameData();
 
-    // Returns all the scanned category number available in the path
-    const std::vector<uint32_t>& get_cat_nbs() const;
+   static const std::string buildDatStr( const std::string folder, const int cat, const int exNum, const int chunk, const std::string platform, const std::string type );
 
-    // Return a specific category by its number (see get_cat_nbs() for loops)
-    const Cat& get_category(uint32_t i_cat_nb);
-    // Return a specific category by it's name (e.g.: "exd"/"game_script"/ etc...)
-    const Cat& get_category(const std::string& i_cat_name);
+   // Returns all the scanned category number available in the path
+   const std::vector<uint32_t>& getCatNumbers() const;
 
-    // Retrieve a file from the dats given its filename
-    std::unique_ptr<File> get_file(const std::string& i_path);
+   // Return a specific category by its number (see getCatNumbers() for loops)
+   const Cat& getCategory( uint32_t catNum );
+   // Return a specific category by it's name (e.g.: "exd"/"game_script"/ etc...)
+   const Cat& getCategory( const std::string& catName );
 
-    // Checks that a file exists
-    bool check_file_existence(const std::string& i_path);
+   const Cat& getExCategory( const std::string& catName, uint32_t exNum, const std::string& path );
 
-    // Checks that a dir exists, there must be a trailing / in the path
-    // Note that it won't work for dirs that don't contain any file
-    // e.g.:  - "ui/icon/" will return False
-    //        - "ui/icon/000000/" will return True
-    bool check_dir_existence(const std::string& i_path);
+   // Retrieve a file from the dats given its filename
+   std::unique_ptr<File> getFile( const std::string& path );
+
+   // Checks that a file exists
+   bool doesFileExist( const std::string& path );
+
+   // Checks that a dir exists, there must be a trailing / in the path
+   // Note that it won't work for dirs that don't contain any file
+   // e.g.:  - "ui/icon/" will return False
+   //        - "ui/icon/000000/" will return True
+   bool doesDirExist( const std::string& path );
 
 protected:
-    // Return a specific category given a path (calls const Cat& get_category(const std::string& i_cat_name))
-    const Cat& get_category_from_path(const std::string& i_path);
+   // Return a specific category given a path (calls const Cat& getCategory(const std::string& catName))
+   const Cat& getCategoryFromPath( const std::string& path );
 
-    // From a full path, returns the dir_hash and the filename_hash
-    void get_hashes(const std::string& i_path, uint32_t& o_dir_hash, uint32_t& o_filename_hash) const;
+   // From a full path, returns the dirHash and the filenameHash
+   void getHashes( const std::string& path, uint32_t& dirHash, uint32_t& filenameHash ) const;
 
-    // Lazy instantiation of category
-    void create_category(uint32_t i_cat_nb);
+   // Lazy instantiation of category
+   void createCategory( uint32_t catNum );
 
-    // Path given to constructor, pointing to the folder with the .index/.datX files
-    const boost::filesystem::path _path;
+   void createExCategory( uint32_t catNum );
 
-    // Stored categories, indexed by their number, categories are instantiated and parsed individually when they are needed
-    std::unordered_map<uint32_t, std::unique_ptr<Cat>> _cats;
+   // Path given to constructor, pointing to the folder with the .index/.datX files
+   const boost::filesystem::path m_path;
 
-    // List of all the categories numbers, is equal to _cats.keys()
-    std::vector<uint32_t> _cat_nbs;
+   // Stored categories, indexed by their number, categories are instantiated and parsed individually when they are needed
+   std::unordered_map<uint32_t, std::unique_ptr<Cat>> m_cats;
 
-    // Mutexes needed to not instantiate the categories at the same time in two different threads, indexed by category number
-    std::unordered_map<uint32_t, std::unique_ptr<std::mutex>> _cat_creation_mutexes;
+   // List of all the categories numbers, is equal to m_cats.keys()
+   std::vector<uint32_t> m_catNums;
+
+   // Map of all EX categories and their chunks, "CatNum - (ExNum - (ChunkNum - Cat))"
+   std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unique_ptr<Cat>>>> m_exCats;
+
+   // Mutexes needed to not instantiate the categories at the same time in two different threads, indexed by category number
+   std::unordered_map<uint32_t, std::unique_ptr<std::mutex>> m_catCreationMutexes;
 };
     
 }

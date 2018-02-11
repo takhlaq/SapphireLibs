@@ -45,7 +45,7 @@ namespace xiv
 
           // Categories, indexed by their name
           std::unordered_map<std::string, std::unique_ptr<Cat>> _cats;
-          // List of category names = _cats.keys()
+          // List of category names = m_cats.keys()
           std::vector<std::string> _cat_names;
           // Mutexes used to avoid race condition when lazy instantiating a category
           std::unordered_map<std::string, std::unique_ptr<std::mutex>> _cat_creation_mutexes;

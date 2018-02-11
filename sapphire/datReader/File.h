@@ -43,7 +43,7 @@ namespace xiv
          const std::vector<std::vector<char>>& get_data_sections() const;
          std::vector<std::vector<char>>& access_data_sections();
 
-         void export_as_bin( const boost::filesystem::path& i_path ) const;
+         void exportToFile( const boost::filesystem::path& i_path ) const;
 
       protected:
          FileType _type;

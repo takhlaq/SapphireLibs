@@ -19,10 +19,10 @@ namespace bparse
 template <int N>
 void byteswap_impl(char (&bytes)[N])
 {
-    for (auto p = std::begin(bytes), end = std::end(bytes) - 1; p < end; ++p, --end)
-    {
-        std::swap(*p, *end);
-    }
+   for( auto p = std::begin( bytes ), end = std::end( bytes ) - 1; p < end; ++p, --end )
+   {
+      std::swap( *p, *end );
+   }
 }
 
 // byteswapping any type (no pointers to array)
@@ -37,8 +37,8 @@ T byteswap(T value)
 template <typename StructType>
 void read(std::istream& i_stream, StructType& i_struct)
 {
-    static_assert(std::is_pod<StructType>::value, "StructType must be a POD to be able to use read.");
-    i_stream.read(reinterpret_cast<char*>(&i_struct), sizeof(StructType));
+   static_assert( std::is_pod<StructType>::value, "StructType must be a POD to be able to use read." );
+   i_stream.read( reinterpret_cast<char*>( &i_struct ), sizeof( StructType ) );
 }
 
 // By default a type does not need reordering
@@ -48,9 +48,8 @@ template <typename StructType> void reorder(StructType& i_struct) {}
 template <typename StructType>
 void extract(std::istream& i_stream, StructType& o_struct)
 {
-    read(i_stream, o_struct);
-    reorder(o_struct);
-   
+   read( i_stream, o_struct );
+   reorder( o_struct );
 }
 
 // This should not copy because of RVO
@@ -66,34 +65,34 @@ StructType extract( std::istream& i_stream )
 template <typename StructType>
 void extract(std::istream& i_stream, uint32_t i_size, std::vector<StructType>& o_structs )
 {
-    o_structs.reserve(i_size);
-    for (uint32_t i = 0; i < i_size; ++i)
-    {
-        o_structs.emplace_back(extract<StructType>(i_stream));
-    }
+   o_structs.reserve( i_size );
+   for( uint32_t i = 0; i < i_size; ++i )
+   {
+      o_structs.emplace_back( extract<StructType>( i_stream ) );
+   }
 }
 
 // For simple (integral) types just provide name and endianness directly
 template <typename StructType>
 StructType extract(std::istream& i_stream, const std::string& i_name, bool i_is_le = true)
 {
-    StructType temp_struct;
-    read(i_stream, temp_struct);
-    if (!i_is_le)
-    {
-        temp_struct = byteswap(temp_struct);
-    }
-    return temp_struct;
+   StructType temp_struct;
+   read( i_stream, temp_struct );
+   if( !i_is_le )
+   {
+      temp_struct = byteswap( temp_struct );
+   }
+   return temp_struct;
 }
 
 template <typename StructType>
 void extract(std::istream& i_stream, const std::string& i_name, uint32_t i_size, std::vector<StructType>& o_structs, bool i_is_le = true)
 {
-    o_structs.reserve(i_size);
-    for (uint32_t i = 0; i < i_size; ++i)
-    {
-        o_structs.emplace_back(extract<StructType>(i_stream, i_name));
-    }
+   o_structs.reserve( i_size );
+   for( uint32_t i = 0; i < i_size; ++i )
+   {
+      o_structs.emplace_back( extract<StructType>( i_stream, i_name ) );
+   }
 }
 
 // For cstrings
@@ -104,27 +103,27 @@ std::string extract_cstring( std::istream& i_stream, const std::string& i_name )
 template <typename Type>
 inline std::ostream& output(std::ostream& o_stream, Type& io_value)
 {
-    return o_stream << io_value;
+   return o_stream << io_value;
 }
 
 // for char output the char if printable, else just \xXX's it
 inline std::ostream& output(std::ostream& o_stream, char c)
 {
-    if (isprint(c))
-    {
-        return o_stream << c;
-    }
-    else
-    {
-        // This saves the flags of the stream for a given scope, to be sure that manipulators are reset after the return
-        boost::io::ios_all_saver ias(o_stream);
-        return o_stream << "\\x" << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(c);
-    }
+   if( isprint( c ) )
+   {
+      return o_stream << c;
+   }
+   else
+   {
+      // This saves the flags of the stream for a given scope, to be sure that manipulators are reset after the return
+      boost::io::ios_all_saver ias( o_stream );
+      return o_stream << "\\x" << std::setw( 2 ) << std::setfill( '0' ) << std::hex << static_cast<int>( c );
+   }
 }
 
 inline std::ostream& output(std::ostream& o_stream, uint8_t c)
 {
-    return o_stream << static_cast<uint16_t>(c);
+   return o_stream << static_cast<uint16_t>( c );
 }
 
 }
