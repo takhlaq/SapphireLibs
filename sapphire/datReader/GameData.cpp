@@ -121,7 +121,7 @@ GameData::~GameData()
 const std::string GameData::buildDatStr( const std::string folder, const int cat, const int exNum, const int chunk, const std::string platform, const std::string type )
 {
    char dat[1024];
-   sprintf_s( dat, "%s/%02x%02x%02x.%s.%s", folder.c_str(), cat, exNum, chunk, platform.c_str(), type.c_str() );
+   sprintf( dat, "%s/%02x%02x%02x.%s.%s", folder.c_str(), cat, exNum, chunk, platform.c_str(), type.c_str() );
    return std::string( dat );
 }
 
