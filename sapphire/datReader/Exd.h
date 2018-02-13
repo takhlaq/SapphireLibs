@@ -45,7 +45,7 @@ public:
     ~Exd();
 
     // Get a row by its id
-    const std::vector<Field>& get_row(uint32_t id);
+    const std::vector<Field> get_row(uint32_t id);
 
     // Get all rows
     const std::map<uint32_t, std::vector<Field>>& get_rows();
