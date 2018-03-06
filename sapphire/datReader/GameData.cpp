@@ -12,9 +12,6 @@
 #include "bparse.h"
 #include "DatCat.h"
 #include "File.h"
-#include <common/Logging/Logger.h>
-
-Core::Logger m_log;
 
 namespace
 {
@@ -52,7 +49,6 @@ GameData::GameData(const boost::filesystem::path& path) try :
       maxExLevel++;
    }
    
-   m_log.info( "[GameData] Detected Expansion Level: " + std::to_string( maxExLevel ) );
 
    // Iterate over the files in path
    for( auto it = boost::filesystem::directory_iterator( m_path.string() + "//ffxiv" ); it != boost::filesystem::directory_iterator(); ++it )
@@ -68,7 +64,6 @@ GameData::GameData(const boost::filesystem::path& path) try :
          uint32_t cat_nb;
          iss >> std::hex >> cat_nb;
 
-         m_log.info( "[GameData] Found Category: " + filename + " (" + iss.str() + ")");
 
          // Add to the list of category number
          // creates the empty category in the cats map
@@ -84,7 +79,6 @@ GameData::GameData(const boost::filesystem::path& path) try :
 
             if( boost::filesystem::exists( boost::filesystem::path( path ) ) )
             {
-               m_log.info( "[GameData] -> Found cat for ex" + std::to_string( exNum ) );
 
                int chunkCount = 0;
 
@@ -93,23 +87,19 @@ GameData::GameData(const boost::filesystem::path& path) try :
                   if( boost::filesystem::exists( m_path.string() + "\\" + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkTest, "win32", "index" ) ) )
                   {
                      m_exCats[cat_nb][exNum][chunkTest] = std::unique_ptr<Cat>();
-                     m_log.info( "[GameData}  -> This chunk: " + buildDatStr( "ex" + std::to_string( exNum ), cat_nb, exNum, chunkTest, "win32", "index" ) );
                      chunkCount++;
                   }
                }      
 
-               m_log.info( "[GameData]  -> Found chunks: " + std::to_string( chunkCount ) );
             }
          }
       }
    }
 
-   m_log.info( "[GameData] GameData init at " + path.string() );
 }
 catch( std::exception& e )
 {
    // In case of failure here, client is supposed to catch the exception because it is not recoverable on our side
-   m_log.error( "[GameData] Initialization failed: " + std::string( e.what() ) );
    throw std::runtime_error( "GameData initialization failed: " + std::string( e.what() ) );
 }
 
