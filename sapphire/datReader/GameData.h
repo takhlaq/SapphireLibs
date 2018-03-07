@@ -70,12 +70,14 @@ protected:
    std::vector<uint32_t> m_catNums;
 
    // Map of all EX categories and their chunks, "CatNum - (ExNum - (ChunkNum - Cat))"
-   std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::unique_ptr<Cat>>>> m_exCats;
-
-   // Mutexes needed to not instantiate the categories at the same time in two different threads, indexed by category number
+   // Map of all EX categories and their chunks, "CatNum - (ExNum - (ChunkNum - Cat))"
+   using ChunkToCatMap = struct { std::unordered_map< uint32_t, std::unique_ptr< Cat > > chunkToCatMap; };
+   using ExNumToChunkMap = struct { std::unordered_map< uint32_t, ChunkToCatMap > exNumToChunkMap; };
+   using CatNumToExNumMap = std::unordered_map< uint32_t, ExNumToChunkMap >;
+   CatNumToExNumMap m_exCats;
    std::unordered_map<uint32_t, std::unique_ptr<std::mutex>> m_catCreationMutexes;
 };
-    
+
 }
 }
 
